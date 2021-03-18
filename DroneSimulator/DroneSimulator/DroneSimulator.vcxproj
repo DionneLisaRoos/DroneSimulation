@@ -142,7 +142,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="InputKeyboard.cpp" />
+    <ClCompile Include="InputStatic.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SimDynamic.cpp" />
+    <ClCompile Include="SimStatic.cpp" />
+    <ClCompile Include="Simulator.cpp" />
+    <ClCompile Include="Threads.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Graphics.h" />
+    <ClInclude Include="InputKeyboard.h" />
+    <ClInclude Include="InputStatic.h" />
+    <ClInclude Include="SimDynamic.h" />
+    <ClInclude Include="SimStatic.h" />
+    <ClInclude Include="Simulator.h" />
+    <ClInclude Include="Threads.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
