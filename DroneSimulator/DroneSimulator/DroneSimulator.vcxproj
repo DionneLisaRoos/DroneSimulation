@@ -142,14 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="InputKeyboard.cpp" />
-    <ClCompile Include="InputStatic.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="SimDynamic.cpp" />
-    <ClCompile Include="SimStatic.cpp" />
-    <ClCompile Include="Simulator.cpp" />
-    <ClCompile Include="Threads.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics.h" />
