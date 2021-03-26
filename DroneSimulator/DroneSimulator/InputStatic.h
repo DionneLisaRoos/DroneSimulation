@@ -19,6 +19,10 @@ public:
 		return input;
 	}
 
+	std::array<double, 2> getInput(double t) {
+		return getInputHelper(t);
+	}
+
 	double getInitalTime() {
 		return initialTime;
 	}
@@ -72,7 +76,42 @@ private:
 
 		std::cout << "\ninitial time:   " << initialTime << "\n";
 
-		std::cout << "\nfinal time:   " << finalTime << "\n";*/	
+		std::cout << "\nfinal time:   " << finalTime << "\n";	*/
+	}
+
+	std::array<double, 2> getInputHelper(double t) {
+		if (t > time.back()) {
+			return { 0, 0 };
+		}
+
+		int ind = binary_search(t);
+
+		if (ind == -1) {
+			for (std::vector<double>::iterator it = time.begin(); it != time.end(); ++it) {
+				if (it == time.end()) {
+					return input.back();
+				}
+				
+				if ((*it < t) && (*(it+1) > t)) {
+					int index = it - time.begin();
+					return input.at(index);
+				}
+			}
+		}
+		else {
+			return input.at(ind);
+		}
+	}
+
+	int binary_search(double t) {
+		auto it = std::lower_bound(time.begin(), time.end(), t);
+		if (it == time.end() || *it != t) {
+			return -1;
+		}
+		else {
+			std::size_t index = std::distance(time.begin(), it);
+			return index;
+		}
 	}
 };
 
