@@ -1,3 +1,2 @@
 ﻿  main.cpp
-C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\InputStatic.h(104): warning C4715: 'InputStatic::getInputHelper': not all control paths return a value
   DroneSimulator.vcxproj -> C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\Debug\DroneSimulator.exe
