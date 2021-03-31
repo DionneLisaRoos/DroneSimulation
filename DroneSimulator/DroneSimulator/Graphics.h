@@ -1,347 +1,219 @@
-//#include <SDL.h>
-//#include <SDL_image.h>
-//#include <stdio.h>
-//#include <string>
-//#include <cmath>
-//#pragma once
-//
-//const int SCREEN_WIDTH = 640;
-//const int SCREEN_HEIGHT = 480;
-//
-//class Graphics
-//{
-//public:
-//	Graphics() {}
-//	~Graphics() {}
-//
-//	//Loads image at specified path
-//	bool loadFromFile();// std::string path);
-//
-//	//Deallocates texture
-//	void free();
-//
-//	//Set color modulation
-//	void setColor(Uint8 red, Uint8 green, Uint8 blue);
-//
-//	//Set blending
-//	void setBlendMode(SDL_BlendMode blending);
-//
-//	//Set alpha modulation
-//	void setAlpha(Uint8 alpha);
-//
-//	//Renders texture at given point
-//	void render(int x, int y, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
-//
-//	//Gets image dimensions
-//	int getWidth();
-//	int getHeight();
-//
-//private:
-//	//The actual hardware texture
-//	SDL_Texture* mTexture;
-//
-//	//Image dimensions
-//	int mWidth;
-//	int mHeight;
-//
-//};
-//
-////Starts up SDL and creates window
-//bool init();
-//
-////Loads media
-//bool loadMedia();
-//
-////Frees media and shuts down SDL
-//void close();
-//
-////The window we'll be rendering to
-//SDL_Window* gWindow = NULL;
-//
-////The window renderer
-//SDL_Renderer* gRenderer = NULL;
-//
-////Scene texture
-//Graphics gArrowTexture;
-//
-//
-//Graphics::Graphics()
-//{
-//	//Initialize
-//	mTexture = NULL;
-//	mWidth = 0;
-//	mHeight = 0;
-//}
-//
-//Graphics::~Graphics()
-//{
-//	//Deallocate
-//	free();
-//}
-//
-//bool Graphics::loadFromFile() //std::string path)
-//{
-//	//Get rid of preexisting texture
-//	free();
-//
-//	//The final texture
-//	SDL_Texture* newTexture = NULL;
-//
-//	//Load image at specified path
-//	SDL_Surface* drone = IMG_Load("drone.png");
-//	if (drone == NULL)
-//	{
-//		printf("Unable to load image %s! SDL_image Error: %s\n", "drone.png", IMG_GetError());
-//	}
-//	else
-//	{
-//		//Color key image
-//		//SDL_SetColorKey(drone, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
-//
-//		//Create texture from surface pixels
-//		newTexture = SDL_CreateTextureFromSurface(gRenderer, drone);
-//		if (newTexture == NULL)
-//		{
-//			printf("Unable to create texture from %s! SDL Error: %s\n", "drone.png", SDL_GetError());
-//		}
-//		else
-//		{
-//			//Get image dimensions
-//			mWidth = drone->w;
-//			mHeight = drone->h;
-//		}
-//
-//		//Get rid of old loaded surface
-//		SDL_FreeSurface(drone);
-//	}
-//
-//	//Return success
-//	mTexture = newTexture;
-//	return mTexture != NULL;
-//}
-//
-//void Graphics::free()
-//{
-//	//Free texture if it exists
-//	if (mTexture != NULL)
-//	{
-//		SDL_DestroyTexture(mTexture);
-//		mTexture = NULL;
-//		mWidth = 0;
-//		mHeight = 0;
-//	}
-//}
-//
-//void Graphics::setColor(Uint8 red, Uint8 green, Uint8 blue)
-//{
-//	//Modulate texture rgb
-//	SDL_SetTextureColorMod(mTexture, red, green, blue);
-//}
-//
-//void Graphics::setBlendMode(SDL_BlendMode blending)
-//{
-//	//Set blending function
-//	SDL_SetTextureBlendMode(mTexture, blending);
-//}
-//
-//void Graphics::setAlpha(Uint8 alpha)
-//{
-//	//Modulate texture alpha
-//	SDL_SetTextureAlphaMod(mTexture, alpha);
-//}
-//
-//void Graphics::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
-//{
-//	//Set rendering space and render to screen
-//	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
-//
-//	//Set clip rendering dimensions
-//	if (clip != NULL)
-//	{
-//		renderQuad.w = clip->w;
-//		renderQuad.h = clip->h;
-//	}
-//
-//	//Render to screen
-//	SDL_RenderCopyEx(gRenderer, mTexture, clip, &renderQuad, angle, center, flip);
-//}
-//
-//int Graphics::getWidth()
-//{
-//	return mWidth;
-//}
-//
-//int Graphics::getHeight()
-//{
-//	return mHeight;
-//}
-//
-//bool init()
-//{
-//	//Initialization flag
-//	bool success = true;
-//
-//	//Initialize SDL
-//	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-//	{
-//		printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
-//		success = false;
-//	}
-//	else
-//	{
-//		//Set texture filtering to linear
-//		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
-//		{
-//			printf("Warning: Linear texture filtering not enabled!");
-//		}
-//
-//		//Create window
-//		gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-//		if (gWindow == NULL)
-//		{
-//			printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
-//			success = false;
-//		}
-//		else
-//		{
-//			//Create vsynced renderer for window
-//			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-//			if (gRenderer == NULL)
-//			{
-//				printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-//				success = false;
-//			}
-//			else
-//			{
-//				//Initialize renderer color
-//				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-//
-//				//Initialize PNG loading
-//				int imgFlags = IMG_INIT_PNG;
-//				if (!(IMG_Init(imgFlags) & imgFlags))
-//				{
-//					printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-//					success = false;
-//				}
-//			}
-//		}
-//	}
-//
-//	return success;
-//}
-//
-//bool loadMedia()
-//{
-//	//Loading success flag
-//	bool success = true;
-//
-//	//Load arrow
-//	if (!gArrowTexture.loadFromFile("arrow.png"))
-//	{
-//		printf("Failed to load arrow texture!\n");
-//		success = false;
-//	}
-//
-//	return success;
-//}
-//
-//void close()
-//{
-//	//Free loaded images
-//	gArrowTexture.free();
-//
-//	//Destroy window	
-//	SDL_DestroyRenderer(gRenderer);
-//	SDL_DestroyWindow(gWindow);
-//	gWindow = NULL;
-//	gRenderer = NULL;
-//
-//	//Quit SDL subsystems
-//	IMG_Quit();
-//	SDL_Quit();
-//}
-//
-//int main(int argc, char* args[])
-//{
-//	//Start up SDL and create window
-//	if (!init())
-//	{
-//		printf("Failed to initialize!\n");
-//	}
-//	else
-//	{
-//		//Load media
-//		if (!loadMedia())
-//		{
-//			printf("Failed to load media!\n");
-//		}
-//		else
-//		{
-//			//Main loop flag
-//			bool quit = false;
-//
-//			//Event handler
-//			SDL_Event e;
-//
-//			//Angle of rotation
-//			double degrees = 0;
-//
-//			//Flip type
-//			SDL_RendererFlip flipType = SDL_FLIP_NONE;
-//
-//			//While application is running
-//			while (!quit)
-//			{
-//				//Handle events on queue
-//				while (SDL_PollEvent(&e) != 0)
-//				{
-//					//User requests quit
-//					if (e.type == SDL_QUIT)
-//					{
-//						quit = true;
-//					}
-//					else if (e.type == SDL_KEYDOWN)
-//					{
-//						switch (e.key.keysym.sym)
-//						{
-//						case SDLK_a:
-//							degrees -= 60;
-//							break;
-//
-//						case SDLK_d:
-//							degrees += 60;
-//							break;
-//
-//						case SDLK_q:
-//							flipType = SDL_FLIP_HORIZONTAL;
-//							break;
-//
-//						case SDLK_w:
-//							flipType = SDL_FLIP_NONE;
-//							break;
-//
-//						case SDLK_e:
-//							flipType = SDL_FLIP_VERTICAL;
-//							break;
-//						}
-//					}
-//				}
-//
-//				//Clear screen
-//				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-//				SDL_RenderClear(gRenderer);
-//
-//				//Render arrow
-//				gArrowTexture.render((SCREEN_WIDTH - gArrowTexture.getWidth()) / 2, (SCREEN_HEIGHT - gArrowTexture.getHeight()) / 2, NULL, degrees, NULL, flipType);
-//
-//				//Update screen
-//				SDL_RenderPresent(gRenderer);
-//			}
-//		}
-//	}
-//
-//	//Free resources and close SDL
-//	close();
-//
-//	return 0;
-//}
+#include <SDL.h>
+#include <SDL_image.h>
+#include <stdio.h>
+#include <string>
+#include <cmath>
+#include <iostream>
+#include <array>
+#include <algorithm>
+#pragma once
+
+const int SCREEN_WIDTH = 1040;
+const int SCREEN_HEIGHT = 680;
+const int DRONE_CENTER_W = 103;
+const int DRONE_CENTER_H = 53;
+const int CARGO_CENTER_W = 41;
+const int CARGO_CENTER_H = 32;
+const int CARGO_CENTER_TO_DRONE_H = DRONE_CENTER_H + static_cast<int>(3 * DRONE_CENTER_H);
+const int CARGO_SIDE_TO_DRONE_H = CARGO_CENTER_H - 24;
+
+const int INIT_DRONE_W = (SCREEN_WIDTH / 2) - DRONE_CENTER_W;
+const int INIT_DRONE_H = (SCREEN_HEIGHT / 2) + DRONE_CENTER_H;
+const int INIT_CARGO_W = (SCREEN_WIDTH / 2) - CARGO_CENTER_W;
+const int INIT_CARGO_H = (SCREEN_HEIGHT / 2) + CARGO_CENTER_TO_DRONE_H;
+
+class Graphics
+{
+public:
+	Graphics() {
+		droneTexture = NULL;
+		cargoTexture = NULL;
+		droneWidth = 0;
+		droneHeight = 0;
+		cargoWidth = 0;
+		cargoHeight = 0;
+		droneX = 0;
+		droneY = 0;
+
+		gWindow = NULL;
+		gRenderer = NULL;
+
+		if (!init() || !loadImagesFromFile())
+		{
+			printf("Failed to initialize!\n");
+		}
+	}
+	~Graphics() {
+		free();
+	}
+
+	bool init() {
+		if (SDL_Init(SDL_INIT_VIDEO) < 0)
+		{
+			printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+			return false;
+		}
+		else
+		{
+			if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) printf("Warning: Linear texture filtering not enabled!");
+
+			gWindow = SDL_CreateWindow("Drone and Cargo game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+
+			if (gWindow == NULL)
+			{
+				printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
+				return false;
+			}
+			else
+			{
+				gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+				if (gRenderer == NULL)
+				{
+					printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+					return false;
+				}
+				else
+				{
+					int imgFlags = IMG_INIT_PNG;
+					if (!(IMG_Init(imgFlags) & imgFlags))
+					{
+						printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	bool loadImagesFromFile()
+	{
+		return loadFromFileHelper();
+	}
+
+	void render(int x, int y, bool cargo, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE) {
+		if (cargo) {
+			SDL_Rect renderQuad = { x, y, cargoWidth, cargoHeight };
+			SDL_RenderCopyEx(gRenderer, cargoTexture, clip, &renderQuad, angle, center, flip);
+
+			SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+			SDL_RenderDrawLine(gRenderer, droneX, droneY, (x + CARGO_CENTER_W), (y + CARGO_SIDE_TO_DRONE_H));
+		}
+		else {
+			droneX = x + DRONE_CENTER_W;
+			droneY = y + DRONE_CENTER_H;
+
+			SDL_Rect renderQuad = { x, y, droneWidth, droneHeight };
+			SDL_RenderCopyEx(gRenderer, droneTexture, clip, &renderQuad, angle, center, flip);
+		}
+
+	}
+
+	void updateGraphics(int x, int y, double degrees, bool cargo = false, int cargox = 0, int cargoy = 0, double cargoDegrees = 0) {
+		// TODO: meters to pixels
+		int pixelX = x;
+		int pixelY = y;
+
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		SDL_RenderClear(gRenderer);
+
+		render(INIT_DRONE_W + pixelX, INIT_DRONE_H + pixelY, false, NULL, degrees);
+
+		if (cargo) {
+			int px = cargox;
+			int py = cargoy;
+
+			render(INIT_CARGO_W + px, INIT_CARGO_H + py, true, NULL, cargoDegrees);
+		}
+
+		SDL_RenderPresent(gRenderer);
+	}
+
+	void close()
+	{
+		free();
+
+		SDL_DestroyRenderer(gRenderer);
+		SDL_DestroyWindow(gWindow);
+		gWindow = NULL;
+		gRenderer = NULL;
+
+		IMG_Quit();
+		SDL_Quit();
+	}
+
+	SDL_Window* gWindow;
+
+	SDL_Renderer* gRenderer;
+
+private:
+	SDL_Texture* droneTexture;
+	SDL_Texture* cargoTexture;
+
+	int droneWidth;
+	int droneHeight;
+	int cargoWidth;
+	int cargoHeight;
+
+	int droneX;
+	int droneY;
+
+	bool loadFromFileHelper() {
+		free();
+
+		SDL_Texture* newDroneTexture = NULL;
+		SDL_Texture* newCargoTexture = NULL;
+
+		SDL_Surface* drone = IMG_Load("drone.png");
+		newDroneTexture = SDL_CreateTextureFromSurface(gRenderer, drone);
+
+		if (drone == NULL || newDroneTexture == NULL)
+		{
+			printf("Unable to load or create texture for image drone.png! SDL_image Error: %s\n", IMG_GetError());
+			return false;
+		}
+
+		SDL_Surface* cargo = IMG_Load("cargo.png");
+		newCargoTexture = SDL_CreateTextureFromSurface(gRenderer, cargo);
+
+		if (cargo == NULL || newCargoTexture == NULL)
+		{
+			printf("Unable to load or create texture for image cargo.png! SDL_image Error: %s\n", IMG_GetError());
+			return false;
+		}
+
+		droneWidth = drone->w;
+		droneHeight = drone->h;
+		cargoWidth = cargo->w;
+		cargoHeight = cargo->h;
+
+		//std::cout << "drone w: " << droneWidth << "\th: " << droneHeight << "\ncargo w: " << cargoWidth << "\th: " << cargoHeight << "\n";
+
+		SDL_FreeSurface(drone);
+		SDL_FreeSurface(cargo);
+
+		droneTexture = newDroneTexture;
+		cargoTexture = newCargoTexture;
+
+		return true;
+	}
+
+	void free() {
+		if (droneTexture != NULL)
+		{
+			SDL_DestroyTexture(droneTexture);
+			droneTexture = NULL;
+			droneWidth = 0;
+			droneHeight = 0;
+		}
+		if (cargoTexture != NULL)
+		{
+			SDL_DestroyTexture(cargoTexture);
+			cargoTexture = NULL;
+			cargoWidth = 0;
+			cargoHeight = 0;
+		}
+	}
+};
