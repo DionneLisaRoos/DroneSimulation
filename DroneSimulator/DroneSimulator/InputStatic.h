@@ -8,7 +8,7 @@
 class InputStatic
 {
 public:
-	InputStatic(std::string fileName) : initialTime(0), finalTime(0) { readCSV(fileName); };
+	InputStatic(std::string fileName, double timestep) : initialTime(0), finalTime(0), timeStep(timestep) { readCSV(fileName); };
 	~InputStatic() {};
 
 	std::vector<double> getTime() {
@@ -20,7 +20,41 @@ public:
 	}
 
 	std::array<double, 2> getInput(double t) {
-		return getInputHelper(t);
+		if (t > time.back()) {
+			return { };
+		}
+		int ind = binary_search(t);
+		return input.at(ind);
+	}
+
+	std::vector<std::array<double, 2>> getInput(double tstart, double tend) {
+
+		if (tend > time.back()) {
+			std::cout << "ERROR - end time out of boundaries\n";
+			return { };
+		}
+
+		while (abs(tstart - time.front()) > 1e-9) {
+			time.erase(time.begin());
+			input.erase(input.begin());
+		}
+		std::cout << time.size();
+		while (abs(tend - time.back()) > 1e-9) {
+			time.pop_back();
+			input.pop_back();
+		}
+
+		initialTime = tstart;
+		finalTime = tend;
+
+		/*std::cout << "time test:\n";
+		std::vector<std::array<double, 2>>::iterator inputit = std::begin(input);
+		for (std::vector<double>::iterator it = std::begin(time); it != std::end(time); ++it) {
+			std::cout << *it << "\t" << inputit->at(0) << "\t" << inputit->at(1) << "\n";
+			inputit++;
+		}*/
+
+		return input;
 	}
 
 	double getInitalTime() {
@@ -36,6 +70,7 @@ private:
 	std::vector<std::array<double,2>> input;
 	double initialTime;
 	double finalTime;
+	double timeStep;
 
 	void readCSV(std::string fileName) {
 		std::ifstream inputFile(fileName);
@@ -64,12 +99,16 @@ private:
 		initialTime = time.front();
 		finalTime = time.back();
 
-		/*std::cout << "time test:\n";
-		for (std::vector<double>::iterator it = std::begin(time); it != std::end(time); ++it) {
-			std::cout << *it << "\n";
-		}
+		interpolate();
 
-		std::cout << "\ninput test:\n";
+		/*std::cout << "time test:\n";
+		std::vector<std::array<double, 2>>::iterator inputit = std::begin(input);
+		for (std::vector<double>::iterator it = std::begin(time); it != std::end(time); ++it) {
+			std::cout << *it << "\t" << inputit->at(0) << "\t" << inputit->at(1) << "\n";
+			inputit++;
+		}*/
+
+		/*std::cout << "\ninput test:\n";
 		for (std::vector<std::array<double, 2>>::iterator it = std::begin(input); it != std::end(input); ++it) {
 			std::cout << it->at(0) << "\t" << it->at(1) << "\n";
 		}
@@ -77,30 +116,41 @@ private:
 		std::cout << "\ninitial time:   " << initialTime << "\n";
 
 		std::cout << "\nfinal time:   " << finalTime << "\n";	*/
+
+		/*std::cout << "\nsize time:   " << time.size() << "\n";
+
+		std::cout << "\nsize input:   " << input.size() << "\n";*/
 	}
 
-	std::array<double, 2> getInputHelper(double t) {
-		if (t > time.back()) {
-			return { 0, 0 };
-		}
+	void interpolate() {
+		std::vector<double>::iterator next = std::begin(time)+1;
+		int current = 0;
+		double t = time.at(0);
+		std::vector<double> newTime;
+		std::vector<std::array<double, 2>> newInput;
 
-		int ind = binary_search(t);
+		newTime.push_back(time.at(0));
+		newInput.push_back(input.at(0));
 
-		if (ind == -1) {
-			for (std::vector<double>::iterator it = time.begin(); it != time.end(); ++it) {
-				if (it == time.end()) {
-					return input.back();
-				}
-				
-				if ((*it < t) && (*(it+1) > t)) {
-					int index = it - time.begin();
-					return input.at(index);
-				}
+		while (next != std::end(time)) {
+			t += timeStep;
+
+			if ((abs(t - *next) < 1e-9) || (t > *next)) {
+				current += 1;
+				newTime.push_back(t);
+				newInput.push_back(input.at(current));
+				next++;
+			} else if (t < *next) {
+				newTime.push_back(t);
+				newInput.push_back(input.at(current));
 			}
 		}
-		else {
-			return input.at(ind);
-		}
+
+		time.clear();
+		input.clear();
+
+		time = newTime;
+		input = newInput;
 	}
 
 	int binary_search(double t) {
