@@ -30,6 +30,28 @@ protected:
 		return xk1;
 	}
 
+	std::vector<double> rungeKutta(std::vector<double> xk, std::array<double, 2> u)
+	{
+		std::vector<double> xk1;
+
+		std::vector<double> K1 = dynamics(xk, u);
+		std::vector<double> K2 = dynamics(vectorSum(xk, scalarVectorProd(0.5 * timeStep, K1)), u);
+		std::vector<double> K3 = dynamics(vectorSum(xk, scalarVectorProd(0.5 * timeStep, K2)), u);
+		std::vector<double> K4 = dynamics(vectorSum(xk, scalarVectorProd(timeStep, K3)), u);
+
+		std::vector<double>::iterator it2 = std::begin(K2);
+		std::vector<double>::iterator it3 = std::begin(K3);
+		std::vector<double>::iterator it4 = std::begin(K4);
+
+		for (std::vector<double>::iterator it1 = std::begin(K1); it1 != std::end(K1); ++it1)
+		{
+			xk1.push_back((*it1) + (*it2) * 2 + (*it3) * 2 + (*it4));
+			it2++; it3++; it4++;
+		}
+		return xk1;
+	}
+
+
 	void WriteCSVHelper(std::string fileName, std::vector<std::array<double, 2>> u, std::vector<double> t, std::vector<std::vector<double>> x)
 	{
 		char delimiter = ';';
@@ -44,13 +66,13 @@ protected:
 		}
 		output << '\n';
 
-		for (int i = 0; i < t.size(); i++)
+		for (size_t i = 0; i < t.size(); i++)
 		{
-			output << t[i] << delimiter << u[i][0] << delimiter << u[i][1];
+			output << t.at(i) << delimiter << u.at(i).at(0) << delimiter << u.at(i).at(1);
 
-			for (int j = 0; j < x[1].size(); j++)
+			for (size_t j = 0; j < x.at(1).size(); j++)
 			{
-				output << delimiter << x[i][j];
+				output << delimiter << x.at(i).at(j);
 			}
 			output << '\n';
 		}
@@ -90,24 +112,46 @@ private:
 		return xdot;
 	}
 
+	std::vector<double> scalarVectorProd(double p, std::vector<double> x)
+	{
+		std::vector<double> y;
+		for (std::vector<double>::iterator it = std::begin(x); it < std::end(x); it++)
+		{
+			y.push_back((*it) * p);
+		}
+		return y;
+	}
+
+	std::vector<double> vectorSum(std::vector<double> x1, std::vector<double> x2)
+	{
+		std::vector<double> y;
+		std::vector<double>::iterator it2 = std::begin(x2);
+		for (std::vector<double>::iterator it = std::begin(x1); it < std::end(x1); it++)
+		{
+			y.push_back((*it) + (*it2));
+			it2++;
+		}
+		return y;
+	}
+
 	//const attributes of the system
-	static const float massDrone;
-	static const float massCargo;
-	static const float CdragDrone;
-	static const float CdragCargo;
-	static const float lengthRope;
-	static const float stiffnessRope;
-	static const float dampingRope;
-	static const float gravitation;
+	static const double massDrone;
+	static const double massCargo;
+	static const double CdragDrone;
+	static const double CdragCargo;
+	static const double lengthRope;
+	static const double stiffnessRope;
+	static const double dampingRope;
+	static const double gravitation;
 };//end class definition
 
-const float Simulator::massDrone = 3;
-const float Simulator::massCargo = 2;
-const float Simulator::CdragDrone = 0.1;
-const float Simulator::CdragCargo = 0.1;
-const float Simulator::lengthRope = 1.5;
-const float Simulator::stiffnessRope = 40000;
-const float Simulator::dampingRope = 50;
-const float Simulator::gravitation = 9.81;
+const double Simulator::massDrone = 3;
+const double Simulator::massCargo = 2;
+const double Simulator::CdragDrone = 0.1;
+const double Simulator::CdragCargo = 0.1;
+const double Simulator::lengthRope = 1.5;
+const double Simulator::stiffnessRope = 40000;
+const double Simulator::dampingRope = 50;
+const double Simulator::gravitation = 9.81;
 
 

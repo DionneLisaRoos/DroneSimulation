@@ -5,16 +5,20 @@
 
 int main(int argc, char* args[])
 {
-	double timestep = 0.01;
-	InputStatic input("input.csv", timestep);
-	double timeStep = 0.01;
+	double timeStep = 0.05;
+	InputStatic input("input.csv", timeStep);
 	std::vector<double> initialState = {0, 0, 0, 0, 0};
 
-	SimStatic staticSimulation(initialState, input, timeStep);
+	SimStatic staticSimulation(initialState, input, timeStep, false);
 	staticSimulation.staticSimulateFullEuler();
-	staticSimulation.WriteCSV("output.csv");
+	staticSimulation.WriteCSV("outputEuler.csv");
 
+	std::cout << "next\n";
 
+	staticSimulation.staticSimulateFullRungeKutta();
+	staticSimulation.WriteCSV("outputKutta.csv");
+
+	//testingCode
 	//input.getInput(13.3, 22.1);
 	////std::array<double, 2> i1 = input.getInput(22);
 	////std::array<double, 2> i2 = input.getInput(3);

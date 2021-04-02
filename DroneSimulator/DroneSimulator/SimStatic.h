@@ -1,12 +1,14 @@
 #pragma once
 #include "Simulator.h"
 #include "InputStatic.h"
+#include "Graphics.h"
 
 class SimStatic :
 	public Simulator
 {
 public:
-	SimStatic(std::vector<double> x0, InputStatic input, double timestep)
+
+	SimStatic(std::vector<double> x0, InputStatic input, double timestep, bool cargo) : graphics(cargo)
 	{
 		x.push_back(x0);
 
@@ -20,9 +22,21 @@ public:
 	// simulate full time range of input
 	void staticSimulateFullEuler()
 	{
-		for (int i = 1; i < t.size(); i++)
+		for (size_t i = 1; i < t.size(); i++)
 		{
 			x.push_back(eulerForward(x.at(i - 1), u.at(i - 1)));
+			graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2));
+			std::cout << t.at(i) << "\n";
+		}
+	};
+
+	void staticSimulateFullRungeKutta()
+	{
+		for (size_t i = 1; i < t.size(); i++)
+		{
+			x.push_back(rungeKutta(x.at(i - 1), u.at(i - 1)));
+			graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2));
+			std::cout << t.at(i) << "\n";
 		}
 	};
 
@@ -35,5 +49,5 @@ private:
 	std::vector<double> t;
 	std::vector<std::vector<double>> x;//-------------------------------------
 	std::vector<std::array<double, 2>> u;
-
+	Graphics graphics;
 };
