@@ -20,11 +20,28 @@ protected:
 		std::vector<double> xk1;
 		std::vector<double> xdot = dynamics(xk, u);
 
-		std::vector<double>::iterator xkit = std::begin(xk);
-		for (std::vector<double>::iterator it = std::begin(xdot); it != std::end(xdot); ++it)
+		xk1 = vectorSum(xk, scalarVectorProd(timeStep, xdot));
+
+		return xk1;
+	}
+
+	std::vector<double> rungeKutta(std::vector<double> xk, std::array<double, 2> u)
+	{
+		std::vector<double> xk1;
+
+		std::vector<double> K1 = dynamics(xk, u);
+		std::vector<double> K2 = dynamics(vectorSum(xk, scalarVectorProd(0.5 * timeStep, K1)), u);
+		std::vector<double> K3 = dynamics(vectorSum(xk, scalarVectorProd(0.5 * timeStep, K2)), u);
+		std::vector<double> K4 = dynamics(vectorSum(xk, scalarVectorProd(timeStep, K3)), u);
+
+		std::vector<double>::iterator it2 = std::begin(K2);
+		std::vector<double>::iterator it3 = std::begin(K3);
+		std::vector<double>::iterator it4 = std::begin(K4);
+
+		for (std::vector<double>::iterator it1 = std::begin(K1); it1 != std::end(K1); ++it1)
 		{
-			xk1.push_back(*xkit + (*it)* timeStep);
-			xkit++;
+			xk1.push_back( *it1 + *it2*2 + *it3*2 + *it4 );
+			it2++; it3++; it4++;
 		}
 		return xk1;
 	}
@@ -91,6 +108,29 @@ private:
 
 		return xdot;
 	}
+
+	std::vector<double> scalarVectorProd(double p, std::vector<double> x)
+	{
+		std::vector<double> y;
+		for (std::vector<double>::iterator it = std::begin(x); it < std::end(x); it++)
+		{
+			y.push_back(*it * p);
+		}
+		return y;
+	}
+
+	std::vector<double> vectorSum(std::vector<double> x1, std::vector<double> x2)
+	{
+		std::vector<double> y;
+		std::vector<double>::iterator it2 = std::begin(x2);
+		for (std::vector<double>::iterator it = std::begin(x1); it < std::end(x1); it++)
+		{
+			y.push_back(*it + (*it2));
+			it2++;
+		}
+		return y;
+	}
+
 
 	//const attributes of the system
 	float const massDrone{ 3 };
