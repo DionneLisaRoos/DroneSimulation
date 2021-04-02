@@ -1,2 +1,8 @@
 ﻿  main.cpp
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\Simulator.h(47,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\Simulator.h(51,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\Simulator.h(106,40): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\Simulator.h(107,40): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\Simulator.h(111,42): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\SimStatic.h(24,21): warning C4018: '<': signed/unsigned mismatch
   DroneSimulator.vcxproj -> C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\Debug\DroneSimulator.exe
