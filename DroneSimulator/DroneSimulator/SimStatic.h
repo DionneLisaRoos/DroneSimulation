@@ -47,7 +47,7 @@ public:
 private:
 	//storage variables
 	std::vector<double> t;
-	std::vector<std::vector<double>> x;//-------------------------------------
+	std::vector<std::vector<double>> x;
 	std::vector<std::array<double, 2>> u;
 	Graphics graphics;
 };

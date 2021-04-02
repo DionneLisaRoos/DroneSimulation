@@ -47,13 +47,6 @@ public:
 		initialTime = tstart;
 		finalTime = tend;
 
-		/*std::cout << "time test:\n";
-		std::vector<std::array<double, 2>>::iterator inputit = std::begin(input);
-		for (std::vector<double>::iterator it = std::begin(time); it != std::end(time); ++it) {
-			std::cout << *it << "\t" << inputit->at(0) << "\t" << inputit->at(1) << "\n";
-			inputit++;
-		}*/
-
 		return input;
 	}
 
@@ -100,26 +93,6 @@ private:
 		finalTime = time.back();
 
 		interpolate();
-
-		/*std::cout << "time test:\n";
-		std::vector<std::array<double, 2>>::iterator inputit = std::begin(input);
-		for (std::vector<double>::iterator it = std::begin(time); it != std::end(time); ++it) {
-			std::cout << *it << "\t" << inputit->at(0) << "\t" << inputit->at(1) << "\n";
-			inputit++;
-		}*/
-
-		/*std::cout << "\ninput test:\n";
-		for (std::vector<std::array<double, 2>>::iterator it = std::begin(input); it != std::end(input); ++it) {
-			std::cout << it->at(0) << "\t" << it->at(1) << "\n";
-		}
-
-		std::cout << "\ninitial time:   " << initialTime << "\n";
-
-		std::cout << "\nfinal time:   " << finalTime << "\n";	*/
-
-		/*std::cout << "\nsize time:   " << time.size() << "\n";
-
-		std::cout << "\nsize input:   " << input.size() << "\n";*/
 	}
 
 	void interpolate() {

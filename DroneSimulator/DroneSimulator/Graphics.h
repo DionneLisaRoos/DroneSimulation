@@ -192,8 +192,6 @@ private:
 		cargoWidth = cargo->w;
 		cargoHeight = cargo->h;
 
-		//std::cout << "drone w: " << droneWidth << "\th: " << droneHeight << "\ncargo w: " << cargoWidth << "\th: " << cargoHeight << "\n";
-
 		SDL_FreeSurface(drone);
 		SDL_FreeSurface(cargo);
 

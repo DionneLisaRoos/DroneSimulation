@@ -57,7 +57,6 @@ protected:
 		char delimiter = ';';
 
 		std::ofstream output(fileName);
-		//output.open(fileName + ".csv");
 
 		output << "time" << delimiter << "input thrust" << delimiter << "input tilt" << delimiter << "x_drone" << delimiter << "y_drone"<< delimiter << "theta" << delimiter << "xdot_drone" << delimiter << "ydot_drone";
 		if ((x.front()).size() == 9)
@@ -84,30 +83,19 @@ private:
 	{
 		std::vector<double>  xdot;
 
-		//if (x.size() == 5)
-		//{
-			xdot.push_back(x[3]);
-			xdot.push_back(x[4]);
-			xdot.push_back(u[1]);
-			xdot.push_back((-u[0] * cos(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[3]) / massDrone);
-			xdot.push_back((u[0] * cos(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[4]) / massDrone - gravitation);
-		//}
+		xdot.push_back(x[3]);
+		xdot.push_back(x[4]);
+		xdot.push_back(u[1]);
+		xdot.push_back((-u[0] * cos(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[3]) / massDrone);
+		xdot.push_back((u[0] * cos(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[4]) / massDrone - gravitation);
+	
 		if (x.size() == 9)
 		{
-			//xdot[1] = x[4];
-			//xdot[2] = x[5];
-			//xdot[3] = u[2];
-			//xdot[4] = (-u[1] * cos(x[3]) - CdragDrone * sqrt(pow(x[4], 2) + pow(x[5], 2)) * x[4]) / massDrone;
-			//xdot[5] = (u[1] * cos(x[3]) - CdragDrone * sqrt(pow(x[4], 2) + pow(x[5], 2)) * x[5]) / massDrone - gravitation;
 			xdot.push_back(x[7]);
 			xdot.push_back(x[8]);
 			xdot.push_back((-CdragCargo * sqrt(pow(x[7], 2) + pow(x[8], 2)) * x[7]) / massCargo);
 			xdot.push_back((-CdragCargo * sqrt(pow(x[7], 2) + pow(x[8], 2)) * x[8]) / massCargo - gravitation);
 		}
-		//else
-		//{
-		//	std::cout << "Error [Simulator.Dynamics()]: Input dimension defined for 5 and 9, dynamics for given dimension: " << x.size() << " are undefined\n";
-		//}
 
 		return xdot;
 	}
