@@ -77,6 +77,7 @@ protected:
 	float timeStep{ 0.01 };
 
 private:
+
 	std::vector<double> dynamics(std::vector<double> x, std::array<double, 2> u)
 	{
 		std::vector<double>  xdot;
