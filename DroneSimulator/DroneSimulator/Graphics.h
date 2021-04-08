@@ -8,8 +8,9 @@
 #include <algorithm>
 #pragma once
 
-const int SCREEN_WIDTH = 1040;
-const int SCREEN_HEIGHT = 680;
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 720;
+const int METERS_TO_PIXELS = 10;
 const int DRONE_CENTER_W = 103;
 const int DRONE_CENTER_H = 53;
 const int CARGO_CENTER_W = 41;
@@ -114,8 +115,9 @@ public:
 
 	void updateGraphics(double x, double y, double degrees, int cargox = 0, int cargoy = 0, double cargoDegrees = 0) {
 		// TODO: meters to pixels
-		int pixelX = static_cast<int>(x);
-		int pixelY = static_cast<int>(y);
+		int pixelX = static_cast<int>(x*METERS_TO_PIXELS);
+		int pixelY = static_cast<int>(-y*METERS_TO_PIXELS);
+
 
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
@@ -123,8 +125,8 @@ public:
 		render(INIT_DRONE_W + pixelX, INIT_DRONE_H + pixelY, false, NULL, degrees);
 
 		if (cargo) {
-			int px = static_cast<int>(cargox);
-			int py = static_cast<int>(cargoy);
+			int px = static_cast<int>(cargox*METERS_TO_PIXELS);
+			int py = static_cast<int>(-cargoy*METERS_TO_PIXELS);
 
 			render(INIT_CARGO_W + px, INIT_CARGO_H + py, true, NULL, cargoDegrees);
 		}

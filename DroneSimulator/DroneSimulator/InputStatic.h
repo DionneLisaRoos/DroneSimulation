@@ -69,7 +69,7 @@ private:
 		std::ifstream inputFile(fileName);
 		std::string line;
 		std::vector<int> pos;
-		char delimiter = ';';
+		char delimiter = ',';
 		std::array<double, 2> temp = { 0.0, 0.0 };
 
 		getline(inputFile, line); //skip first line because of headers

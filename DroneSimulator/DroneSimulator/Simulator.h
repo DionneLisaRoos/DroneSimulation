@@ -54,7 +54,7 @@ protected:
 
 	void WriteCSVHelper(std::string fileName, std::vector<std::array<double, 2>> u, std::vector<double> t, std::vector<std::vector<double>> x)
 	{
-		char delimiter = ';';
+		char delimiter = ',';
 
 		std::ofstream output(fileName);
 
@@ -69,7 +69,7 @@ protected:
 		{
 			output << t.at(i) << delimiter << u.at(i).at(0) << delimiter << u.at(i).at(1);
 
-			for (size_t j = 0; j < x.at(1).size(); j++)
+			for (size_t j = 0; j < x.at(j+1).size(); j++)
 			{
 				output << delimiter << x.at(i).at(j);
 			}
@@ -86,7 +86,7 @@ private:
 		xdot.push_back(x[3]);
 		xdot.push_back(x[4]);
 		xdot.push_back(u[1]);
-		xdot.push_back((-u[0] * cos(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[3]) / massDrone);
+		xdot.push_back((-u[0] * sin(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[3]) / massDrone);
 		xdot.push_back((u[0] * cos(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[4]) / massDrone - gravitation);
 	
 		if (x.size() == 9)
