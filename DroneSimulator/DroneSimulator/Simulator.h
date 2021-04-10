@@ -188,5 +188,3 @@ const double Simulator::lengthRope0 = 1.5;
 const double Simulator::stiffnessRope = 40000;
 const double Simulator::dampingRope = 50;
 const double Simulator::gravitation = 9.81;
-
-

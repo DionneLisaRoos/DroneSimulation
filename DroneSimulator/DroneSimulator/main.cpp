@@ -18,5 +18,8 @@ int main(int argc, char* args[])
 	staticSimulation.staticSimulateFullRungeKutta();
 	staticSimulation.WriteCSV("outputKutta.csv");
 
+	std::cout << "hoi dit is een nieuwe branch 10-04\n"
+
+
 	return 0;
 }
