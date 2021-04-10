@@ -7,9 +7,9 @@ int main(int argc, char* args[])
 {
 	double timeStep = 0.05;
 	InputStatic input("input.csv", timeStep);
-	std::vector<double> initialState = {0, 0, 0, 0, 0};
+	std::vector<double> initialState = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-	SimStatic staticSimulation(initialState, input, timeStep, false);
+	SimStatic staticSimulation(initialState, input, timeStep, true);
 	staticSimulation.staticSimulateFullEuler();
 	staticSimulation.WriteCSV("outputEuler.csv");
 
