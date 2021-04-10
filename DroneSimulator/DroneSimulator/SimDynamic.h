@@ -10,7 +10,7 @@ public:
 	{
 		x.push_back(x0);
 		t.push_back(0);
-		u.push_back(input.getInput())
+		u.push_back(input.getInput());
 		timeStep = timestep;
 		InputKeyboard input = input;
 	};
