@@ -50,10 +50,10 @@ int main(int argc, char* args[])
 		//}
 
 		//Get the keystates
-		Uint8* keystates = SDL_GetKeyState(NULL);
+		//Uint8* keystates = SDL_GetKeyState(NULL);
 
 		//If up is pressed
-		if (keystates[SDLK_UP])
+		/*if (keystates[SDLK_UP])
 		{
 			std::cout << "UP";
 		}
@@ -70,7 +70,7 @@ int main(int argc, char* args[])
 		}
 		else {
 			std::cout << "----------------";
-		}
+		}*/
 
 
 		//Update the screen
@@ -179,7 +179,7 @@ int main(int argc, char* args[])
 	//}
 
 	//Free resources and close SDL
-	close();
+	//close();
 
 	return 0;
 }
