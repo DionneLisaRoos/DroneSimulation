@@ -8,10 +8,10 @@ class SimStatic :
 {
 public:
 
-	SimStatic(std::vector<double> x0, InputStatic input, double timestep, bool cargo) : graphics(cargo)
+	SimStatic(std::vector<double> x0, InputStatic input, double timestep, bool Cargo) : graphics(Cargo)
 	{
 		x.push_back(x0);
-
+		cargo = Cargo;
 		timeStep = timestep;
 		
 		u = input.getInput();
@@ -22,21 +22,49 @@ public:
 	// simulate full time range of input
 	void staticSimulateFullEuler()
 	{
-		for (size_t i = 1; i < t.size(); i++)
+		x.clear();
+		// 2 options, make if else for cargo to update graphics
+		// or pass full xk to graphics and discriminate between cargo or no in the grapgics class
+		if (cargo)
 		{
-			x.push_back(eulerForward(x.at(i - 1), u.at(i - 1)));
-			graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2));
-			std::cout << t.at(i) << "\n";
+			for (size_t i = 1; i < t.size(); i++)
+			{
+				x.push_back(eulerForward(x.at(i - 1), u.at(i - 1)));
+				graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2), x.at(i).at(5), x.at(i).at(6));
+				std::cout << t.at(i) << "\n";
+			}
+		}
+		else
+		{
+			for (size_t i = 1; i < t.size(); i++)
+			{
+				x.push_back(eulerForward(x.at(i - 1), u.at(i - 1)));
+				graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2));
+				std::cout << t.at(i) << "\n";
+			}
 		}
 	};
 
 	void staticSimulateFullRungeKutta()
 	{
-		for (size_t i = 1; i < t.size(); i++)
+		x.clear();
+		if (cargo)
 		{
-			x.push_back(rungeKutta(x.at(i - 1), u.at(i - 1)));
-			graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2));
-			std::cout << t.at(i) << "\n";
+			for (size_t i = 1; i < t.size(); i++)
+			{
+				x.push_back(rungeKutta(x.at(i - 1), u.at(i - 1)));
+				graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2), x.at(i).at(5), x.at(i).at(6));
+				std::cout << t.at(i) << "\n";
+			}
+		}
+		else
+		{
+			for (size_t i = 1; i < t.size(); i++)
+			{
+				x.push_back(rungeKutta(x.at(i - 1), u.at(i - 1)));
+				graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2));
+				std::cout << t.at(i) << "\n";
+			}
 		}
 	};
 
@@ -46,8 +74,9 @@ public:
 
 private:
 	//storage variables
-	std::vector<double> t;
 	std::vector<std::vector<double>> x;
+	std::vector<double> t;
 	std::vector<std::array<double, 2>> u;
+	bool cargo;
 	Graphics graphics;
 };
