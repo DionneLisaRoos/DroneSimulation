@@ -112,10 +112,6 @@ public:
 			SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
 			SDL_RenderDrawLine(gRenderer, (x + DRONE_CENTER_W), (y + DRONE_CENTER_H), (cargox + CARGO_CENTER_W), (cargoy + CARGO_SIDE_TO_DRONE_H));
 		}
-
-		SDL_RenderDrawPoint(gRenderer, 640, 386);
-		SDL_RenderDrawPoint(gRenderer, 578, 341);
-
 	}
 
 	void updateGraphics(double x, double y, double degrees, double cargox = 0, double cargoy = 0, double cargoDegrees = 0) {
