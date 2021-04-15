@@ -6,3 +6,5 @@ C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSi
 C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\GUI.h(28,5): error C2512: 'LButton': no appropriate default constructor available
 C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\LButton.h(23,7): message : see declaration of 'LButton'
 C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\GUI.h(163,24): error C2065: 'BUTTON_SPRITE_TOTAL': undeclared identifier
+  mouseclicks.cpp
+  Generating Code...
