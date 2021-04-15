@@ -5,13 +5,14 @@
 
 int main(int argc, char* args[])
 {
-	double timeStep = 0.05;
+	double timeStep = 0.01;
 	InputStatic input("input.csv", timeStep);
-	std::vector<double> initialState = {0, 0, 0, 0, 0};
+	std::vector<double> initialState = {0, 1, 0, 0, 0,0,0,0,0};
+	//std::vector<double> initialState = { 0, 0, 0, 0, 0 };
 
-	SimStatic staticSimulation(initialState, input, timeStep, false);
-	staticSimulation.staticSimulateFullEuler();
-	staticSimulation.WriteCSV("outputEuler.csv");
+	SimStatic staticSimulation(initialState, input, timeStep, 1);
+	//staticSimulation.staticSimulateFullEuler();
+	//staticSimulation.WriteCSV("outputEuler.csv");
 
 	std::cout << "next\n";
 

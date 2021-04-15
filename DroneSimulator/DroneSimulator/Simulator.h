@@ -56,7 +56,7 @@ protected:
 
 		for (std::vector<double>::iterator it1 = std::begin(K1); it1 != std::end(K1); ++it1)
 		{
-			xdot.push_back(((*it1) + (*it2) * 2 + (*it3) * 2 + (*it4)) * timeStep / 6);
+			xdot.push_back(((*it1) + (*it2) * 2 + (*it3) * 2 + (*it4)) * timeStep/6);
 			it2++; it3++; it4++;
 		}
 		xk1 = vectorSum(xk, xdot);
@@ -85,7 +85,7 @@ protected:
 			// write ... x]
 			for (std::vector<double>::iterator it = std::begin(x.at(i)); it < std::end(x.at(i)); it++)
 			{
-				output << *it << delimiter;
+				output << delimiter << *it ;
 			}
 			output << '\n';
 		}
@@ -112,8 +112,12 @@ private:
 		else if (x.size() == 9)
 		{
 			std::array<double, 2> y; // ropeLength and ropeLengthDot
-			y[0] = sqrt(pow(x[0] - x[5], 2) + pow(x[1] - x[6], 2));
-			y[1] = ((x[0] - x[5]) * (x[3] - x[7]) + (x[1] - x[6]) * (x[4] - x[8])) / y[0];
+		//  y1   = sqrt( (   x1   - x6)^2    + (   x2   - x7)^2 )
+		//  y2   = ( (x1   - x6)   * (x4   -  x8)  + (x2   - x7)   * (x5   - x9)  ) / y1
+			y[0] = sqrt( pow(x[0] - x[5], 2) + pow(x[1] - x[6], 2));
+			if (y[0] == 0)	y[1] = 0;
+			else			y[1] = ((x[0] - x[5]) * (x[3] - x[7]) + (x[1] - x[6]) * (x[4] - x[8])) / y[0];
+			
 
 			double Frope = stiffnessRope * (y[0] - lengthRope0) + dampingRope * y[1];
 			double Fropex;
@@ -136,12 +140,13 @@ private:
 			xdot.push_back(x[4]);
 			xdot.push_back(u[1]);
 			xdot.push_back((-u[0] * sin(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[3] - Fropex) / massDrone);
-			xdot.push_back((u[0] * cos(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[4] - Fropey) / massDrone - gravitation);
+			xdot.push_back(( u[0] * cos(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[4] - Fropey) / massDrone - gravitation);
+
 			// dynamics for cargo
 			xdot.push_back(x[7]);
 			xdot.push_back(x[8]);
-			xdot.push_back((-CdragCargo * sqrt(pow(x[7], 2) + pow(x[8], 2)) * x[7] + Fropex) / massCargo);
-			xdot.push_back((-CdragCargo * sqrt(pow(x[7], 2) + pow(x[8], 2)) * x[8] + Fropey) / massCargo - gravitation);
+			xdot.push_back((				  - CdragCargo * sqrt(pow(x[7], 2) + pow(x[8], 2)) * x[7] + Fropex) / massCargo);
+			xdot.push_back((				  - CdragCargo * sqrt(pow(x[7], 2) + pow(x[8], 2)) * x[8] + Fropey) / massCargo - gravitation);
 		}
 
 		return xdot;
