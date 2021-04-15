@@ -6,52 +6,49 @@
 class SimDynamic : public Simulator
 {
 public:
-	SimDynamic(std::vector<double> x0, InputKeyboard input, double timestep, bool cargo) : graphics(cargo)
+	SimDynamic(std::vector<double> x0, std::array<double, 2> u0, double timestep, int FPS)
 	{
 		x.push_back(x0);
 		t.push_back(0);
-		u.push_back(input.getInput());
+		u.push_back(u0);
 		timeStep = timestep;
-		InputKeyboard input = input;
+		draw_time = static_cast<double>(1/FPS);
 	};
 
 	~SimDynamic()
 	{};
 
-	void dynamicSimulation()
+	std::vector<double> simToNextFrame(std::array<double,2> uk)
 	{
-		Uint32 timeout = SDL_GetTicks() + 1000 / FPS;
-		SDL_Event e;
+		// xk1 is the states of the next drawn frame
+		std::vector<double> xk1;
 
-		while (!quit)
+		// timeTarget is the time of the next render
+		double timeTarget = t.back() + draw_time;
+
+		// simulate the drone until next frame can be drawn
+		while (t.back() < timeTarget)
 		{
-			xk = eulerForward(xk, uk);
-			uk = input.getInput();
-			graphics.updateGraphics(x.at(0), x.at(1), x.at(2));
-			x.push_back(xk);
+			xk1 = rungeKutta(x.back(), uk);
+			x.push_back(xk1);
+			t.push_back(t.back() + timeStep);
 			u.push_back(uk);
-			t.push_back(t.end() + 1000 / FPS);
-			while (!SDL_TICKS_PASSED(SDL_GetTicks(), timeout))
-			{
-				while (SDL_PollEvent(&e))
-				{
-
-				}
-			}
-			timeout += 1000 / FPS;
 		}
+
+		return xk1;
 	}
 
 
 
 
 private:
-	//storage variables
+	// storage variables
 	std::vector<double> t;
 	std::vector<std::vector<double>> x;
-	std::vector<double> xk;
 	std::vector<std::array<double, 2>> u;
-	std::array<double, 2> uk;
-	const int FPS = 30;
-	bool quit;
+
+
+	// simulator parameters
+	double timeStep;
+	double draw_time;
 };
