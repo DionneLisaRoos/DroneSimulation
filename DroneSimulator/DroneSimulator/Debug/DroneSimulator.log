@@ -1,2 +1,8 @@
 ﻿  main.cpp
-  DroneSimulator.vcxproj -> C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\Debug\DroneSimulator.exe
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\LButton.h(105,90): error C2676: binary '[': 'SDL_Rect' does not define this operator or a conversion to a type acceptable to the predefined operator
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\GUI.h(17,1): error C2011: 'LButtonSprite': 'enum' type redefinition
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\LButton.h(13): message : see declaration of 'LButtonSprite'
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\GUI.h(203,24): error C2065: 'BUTTON_SPRITE_TOTAL': undeclared identifier
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\GUI.h(28,5): error C2512: 'LButton': no appropriate default constructor available
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\LButton.h(23,7): message : see declaration of 'LButton'
+C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\GUI.h(163,24): error C2065: 'BUTTON_SPRITE_TOTAL': undeclared identifier

@@ -2,22 +2,55 @@
 #include "Graphics.h"
 #include "SimStatic.h"
 #include "InputStatic.h"
+#include "GUI.h"
+
+const int FPS = 20; // Frame rate in frames per second
+Uint32 timeout_ms = SDL_GetTicks() + 1000 / FPS; // Initialize so
+// that after drawing the first frame, it waits for 1000/FPS ms
+SDL_Event e;
 
 int main(int argc, char* args[])
 {
-	double timeStep = 0.01;
-	InputStatic input("input.csv", timeStep);
-	std::vector<double> initialState = {0, 1, 0, 0, 0,0,0,0,0};
-	//std::vector<double> initialState = { 0, 0, 0, 0, 0 };
 
-	SimStatic staticSimulation(initialState, input, timeStep, 1);
-	//staticSimulation.staticSimulateFullEuler();
-	//staticSimulation.WriteCSV("outputEuler.csv");
+	GUI gui; 
+	gui.startSettingsPage();
 
-	std::cout << "next\n";
+	//double timeStep = 0.01;
+	//InputStatic input("input.csv", timeStep);
+	//std::vector<double> initialState = {0, 1, 0, 0, 0,0,0,0,0};
+	////std::vector<double> initialState = { 0, 0, 0, 0, 0 };
 
-	staticSimulation.staticSimulateFullRungeKutta();
-	staticSimulation.WriteCSV("outputKutta.csv");
+	//SimStatic staticSimulation(initialState, input, timeStep, 1);
+	////staticSimulation.staticSimulateFullEuler();
+	////staticSimulation.WriteCSV("outputEuler.csv");
+
+	//std::cout << "next\n";
+
+	//staticSimulation.staticSimulateFullRungeKutta();
+	//staticSimulation.WriteCSV("outputKutta.csv");
+
+
+
+	//while (!quit) {
+	//	DRAW_DRONE_ON_SCREEN(...);
+	//	COMPUTE_NEXT_DRONE_POSITION_WITH_SIMULATOR(...);
+	//	// Integrate for 1.0/FPS seconds
+	//	
+	//	// Wait until frame time has passed, process input events when they arrive
+	//	while (!SDL_TICKS_PASSED(SDL_GetTicks(), timeout)) {
+	//		// Handle all waiting input events
+	//		while (SDL_PollEvent(&e)) {
+	//		// ... Do only short work here to handle event
+	//			
+	//		}
+	//		// ... Do (short) extra work (or nothing) until timeout has elapsed
+	//		
+	//	}
+	//	
+	//	timeout += 1000 / FPS; // Set timeout for next frame
+	//}
+
+
 
 	return 0;
 }
