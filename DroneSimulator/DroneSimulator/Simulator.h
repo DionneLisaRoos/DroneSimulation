@@ -43,6 +43,7 @@ protected:
 	std::vector<double> rungeKutta(std::vector<double> xk, std::array<double, 2> u)
 	{
 		std::vector<double> xk1;
+		std::vector<double> xdot;
 
 		std::vector<double> K1 = dynamics(xk, u);
 		std::vector<double> K2 = dynamics(vectorSum(xk, scalarVectorProd(0.5 * timeStep, K1)), u);
@@ -55,9 +56,10 @@ protected:
 
 		for (std::vector<double>::iterator it1 = std::begin(K1); it1 != std::end(K1); ++it1)
 		{
-			xk1.push_back((*it1) + (*it2) * 2 + (*it3) * 2 + (*it4));
+			xdot.push_back(((*it1) + (*it2) * 2 + (*it3) * 2 + (*it4)) * timeStep / 6);
 			it2++; it3++; it4++;
 		}
+		xk1 = vectorSum(xk, xdot);
 		return xk1;
 	}
 
@@ -71,7 +73,7 @@ protected:
 		output << "time" << delimiter << "thrust" << delimiter << "tilt" << delimiter << "x_drone" << delimiter << "y_drone" << delimiter << "theta" << delimiter << "xdot_drone" << delimiter << "ydot_drone";
 		if ((x.front()).size() == 9)
 		{
-			output << "x_cargo" << delimiter << "y_cargo" << delimiter << "xdot_cargo" << delimiter << "ydot_cargo";
+			output << delimiter << "x_cargo" << delimiter << "y_cargo" << delimiter << "xdot_cargo" << delimiter << "ydot_cargo";
 		}
 		output << '\n';
 
