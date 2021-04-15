@@ -12,7 +12,7 @@ public:
 		t.push_back(0);
 		u.push_back(u0);
 		timeStep = timestep;
-		draw_time = static_cast<double>(1/FPS);
+		draw_time = 1.0/FPS;
 	};
 
 	~SimDynamic()
@@ -38,7 +38,11 @@ public:
 		return xk1;
 	}
 
-
+	void writeCSV() 
+	{
+		std::string fileName = "DynTest.csv";
+		WriteCSVHelper(fileName, u, t, x);
+	}
 
 
 private:
@@ -49,6 +53,5 @@ private:
 
 
 	// simulator parameters
-	double timeStep;
 	double draw_time;
 };
