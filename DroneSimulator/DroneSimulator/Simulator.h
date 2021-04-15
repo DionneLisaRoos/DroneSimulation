@@ -12,7 +12,7 @@
 class Simulator
 {
 public:
-	Simulator() : timeStep(0) {};
+	Simulator() {};
 	~Simulator() {};
 
 protected:
@@ -104,8 +104,8 @@ private:
 			xdot.push_back(x[3]);
 			xdot.push_back(x[4]);
 			xdot.push_back(u[1]);
-			xdot.push_back((-u[0] * sin(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[3]) / massDrone);
-			xdot.push_back((u[0] * cos(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[4]) / massDrone - gravitation);
+			xdot.push_back((-u[0] * sin(x[2]*M_PI/180) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[3]) / massDrone);
+			xdot.push_back((u[0] * cos(x[2]*M_PI/180) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[4]) / massDrone - gravitation);
 		}
 
 		// dynamics for drone with cargo
@@ -139,8 +139,8 @@ private:
 			xdot.push_back(x[3]);
 			xdot.push_back(x[4]);
 			xdot.push_back(u[1]);
-			xdot.push_back((-u[0] * sin(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[3] - Fropex) / massDrone);
-			xdot.push_back(( u[0] * cos(x[2]) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[4] - Fropey) / massDrone - gravitation);
+			xdot.push_back((-u[0] * sin(x[2]*M_PI/180) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[3] - Fropex) / massDrone);
+			xdot.push_back(( u[0] * cos(x[2]*M_PI/180) - CdragDrone * sqrt(pow(x[3], 2) + pow(x[4], 2)) * x[4] - Fropey) / massDrone - gravitation);
 
 			// dynamics for cargo
 			xdot.push_back(x[7]);
