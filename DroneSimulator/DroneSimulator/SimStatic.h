@@ -8,9 +8,9 @@ class SimStatic :
 {
 public:
 
-	SimStatic(std::vector<double> x0, InputStatic input, double timestep, bool Cargo) : graphics(Cargo)
+	SimStatic(std::vector<double> X0, InputStatic input, double timestep, bool Cargo) : graphics(Cargo)
 	{
-		x.push_back(x0);
+		x0 = X0;
 		cargo = Cargo;
 		timeStep = timestep;
 		
@@ -23,6 +23,7 @@ public:
 	void staticSimulateFullEuler()
 	{
 		x.clear();
+		x.push_back(x0);
 		// 2 options, make if else for cargo to update graphics
 		// or pass full xk to graphics and discriminate between cargo or no in the grapgics class
 		if (cargo)
@@ -48,6 +49,7 @@ public:
 	void staticSimulateFullRungeKutta()
 	{
 		x.clear();
+		x.push_back(x0);
 		if (cargo)
 		{
 			for (size_t i = 1; i < t.size(); i++)
@@ -74,6 +76,7 @@ public:
 
 private:
 	//storage variables
+	std::vector<double> x0;
 	std::vector<std::vector<double>> x;
 	std::vector<double> t;
 	std::vector<std::array<double, 2>> u;
