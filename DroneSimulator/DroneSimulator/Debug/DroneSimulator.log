@@ -1,22 +1,2 @@
 ﻿  main.cpp
-C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\SimStatic.h(34,99): warning C4244: 'argument': conversion from '_Ty' to 'int', possible loss of data
-          with
-          [
-              _Ty=double
-          ]
-C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\SimStatic.h(34,84): warning C4244: 'argument': conversion from '_Ty' to 'int', possible loss of data
-          with
-          [
-              _Ty=double
-          ]
-C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\SimStatic.h(58,99): warning C4244: 'argument': conversion from '_Ty' to 'int', possible loss of data
-          with
-          [
-              _Ty=double
-          ]
-C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\DroneSimulator\SimStatic.h(58,84): warning C4244: 'argument': conversion from '_Ty' to 'int', possible loss of data
-          with
-          [
-              _Ty=double
-          ]
   DroneSimulator.vcxproj -> C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\Debug\DroneSimulator.exe

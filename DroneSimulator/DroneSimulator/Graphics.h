@@ -95,42 +95,41 @@ public:
 		return loadFromFileHelper();
 	}
 
-	void render(int x, int y, bool withCargo, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE) {
+	void render(int x, int y, bool withCargo, SDL_Rect* clip = NULL, double angle = 0.0, int cargox = 0, int cargoy = 0, double cargoAngle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE) {
+		droneX = x + DRONE_CENTER_W;
+		droneY = y + DRONE_CENTER_H;
+
+		SDL_Rect renderQuad = { x, y, droneWidth, droneHeight };
+		SDL_RenderCopyEx(gRenderer, droneTexture, clip, &renderQuad, angle, center, flip);
+		std::cout << "drone xy: " << (x + DRONE_CENTER_W) << " " << (y + DRONE_CENTER_H) << std::endl;
+
+
 		if (withCargo) {
-			SDL_Rect renderQuad = { x, y, cargoWidth, cargoHeight };
-			SDL_RenderCopyEx(gRenderer, cargoTexture, clip, &renderQuad, angle, center, flip);
+			SDL_Rect renderQuad = { cargox, cargoy, cargoWidth, cargoHeight };
+			SDL_RenderCopyEx(gRenderer, cargoTexture, clip, &renderQuad, cargoAngle, center, flip);
+			std::cout << "cargo xy: " << (x + CARGO_CENTER_W) << " " << (y + CARGO_SIDE_TO_DRONE_H) << std::endl;
 
 			SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
-			SDL_RenderDrawLine(gRenderer, droneX, droneY, (x + CARGO_CENTER_W), (y + CARGO_SIDE_TO_DRONE_H));
+			SDL_RenderDrawLine(gRenderer, (x + DRONE_CENTER_W), (y + DRONE_CENTER_H), (cargox + CARGO_CENTER_W), (cargoy + CARGO_SIDE_TO_DRONE_H));
 		}
-		else {
-			droneX = x + DRONE_CENTER_W;
-			droneY = y + DRONE_CENTER_H;
 
-			SDL_Rect renderQuad = { x, y, droneWidth, droneHeight };
-			SDL_RenderCopyEx(gRenderer, droneTexture, clip, &renderQuad, angle, center, flip);
-		}
+		SDL_RenderDrawPoint(gRenderer, 640, 386);
+		SDL_RenderDrawPoint(gRenderer, 578, 341);
 
 	}
 
-	void updateGraphics(double x, double y, double degrees, int cargox = 0, int cargoy = 0, double cargoDegrees = 0) {
+	void updateGraphics(double x, double y, double degrees, double cargox = 0, double cargoy = 0, double cargoDegrees = 0) {
 		// TODO: meters to pixels
 		int pixelX = static_cast<int>(x * METERS_TO_PIXELS);
 		int pixelY = static_cast<int>(-y * METERS_TO_PIXELS);
+		int px = static_cast<int>(cargox * METERS_TO_PIXELS);
+		int py = static_cast<int>(-cargoy * METERS_TO_PIXELS);
 
 
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
-
-		render(INIT_DRONE_W + pixelX, INIT_DRONE_H + pixelY, false, NULL, degrees);
-
-		if (cargo) {
-			int px = static_cast<int>(cargox * METERS_TO_PIXELS);
-			int py = static_cast<int>(-cargoy * METERS_TO_PIXELS);
-
-			render(INIT_CARGO_W + px, INIT_CARGO_H + py, true, NULL, cargoDegrees);
-		}
-
+		render(INIT_DRONE_W + pixelX, INIT_DRONE_H + pixelY, cargo, NULL, degrees, INIT_CARGO_W + px, INIT_CARGO_H + py, cargoDegrees);
+		
 		SDL_RenderPresent(gRenderer);
 	}
 
