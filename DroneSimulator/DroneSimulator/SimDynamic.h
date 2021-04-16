@@ -8,9 +8,11 @@ class SimDynamic : public Simulator
 public:
 	SimDynamic(std::vector<double> x0, std::array<double, 2> u0, double timestep, int FPS)
 	{
-		x.push_back(x0);
 		t.push_back(0);
+		x.push_back(x0);
 		u.push_back(u0);
+		xk = x0;
+		uk = u0;
 		timeStep = timestep;
 		draw_time = 1.0/FPS;
 	};
@@ -38,6 +40,27 @@ public:
 		return xk1;
 	}
 
+	//updates state 
+	void updateStates(void)
+	{
+		xk = rungeKutta(x.back(), uk);
+		x.push_back(xk);
+		t.push_back(t.back() + timeStep);
+		u.push_back(uk);
+	}
+
+	// set the input of thrust and tiltrate
+	void setInput(int i, double uin)
+	{
+		this->uk[i] = uin;
+	}
+
+	// get the current state
+	std::vector<double> getState(void)
+	{
+		return xk;
+	}
+
 	void writeCSV() 
 	{
 		std::string fileName = "DynTest.csv";
@@ -50,7 +73,8 @@ private:
 	std::vector<double> t;
 	std::vector<std::vector<double>> x;
 	std::vector<std::array<double, 2>> u;
-
+	std::vector<double> xk;
+	std::array<double,2> uk;
 
 	// simulator parameters
 	double draw_time;
