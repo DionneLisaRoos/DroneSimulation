@@ -38,7 +38,7 @@ public:
 			time.erase(time.begin());
 			input.erase(input.begin());
 		}
-		std::cout << time.size();
+
 		while (abs(tend - time.back()) > 1e-9) {
 			time.pop_back();
 			input.pop_back();

@@ -23,6 +23,7 @@ class GUI
 {
 public:
 	GUI() : keyboard(false), cargo(false) {
+		done = false;
 		if (!init()) { printf("Failed to initialize!\n"); return; }
 		if (!loadMedia()) { printf("Failed to load media!\n"); return; }
 	}
@@ -53,11 +54,12 @@ public:
 
 			if (gButtons[0].isPushed() && choice) {
 				keyboard = false;
-				gButtons[0].clearPushedFlag();
+				done = true;
 				quit = true;
 			}
 			else if (gButtons[1].isPushed() && choice) {
 				keyboard = true;
+				done = true;
 				quit = true;
 			}
 			else if (gButtons[0].isPushed()) {
@@ -84,6 +86,8 @@ public:
 
 	bool getKeyboardChoice() { return keyboard; }
 
+	bool isGuiFinished() { return done; }
+
 private:
 	SDL_Window* gWindow = NULL;
 	SDL_Renderer* gRenderer = NULL;
@@ -104,6 +108,7 @@ private:
 
 	bool cargo;
 	bool keyboard;
+	bool done;
 
 	bool init()
 	{
@@ -111,7 +116,7 @@ private:
 		
 		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) { printf("Warning: Linear texture filtering not enabled!"); }
 
-		gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 400, SDL_WINDOW_SHOWN);
+		gWindow = SDL_CreateWindow("Settings page", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 400, SDL_WINDOW_SHOWN);
 		if (gWindow == NULL) { printf("Window could not be created! SDL Error: %s\n", SDL_GetError()); return false; }
 
 		//Create vsynced renderer for window
@@ -220,5 +225,6 @@ private:
 
 		IMG_Quit();
 		SDL_Quit();
+
 	}
 };

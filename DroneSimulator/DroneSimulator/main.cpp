@@ -15,7 +15,6 @@ std::mutex mtx;
 void simOnThread(SimDynamic& simulator, bool& quit, int simFrequency)
 {
 	using namespace std::chrono_literals;
-	std::cout << "entered sim thread" << '\n';
 	std::chrono::duration<double, std::milli> sleepTime = 1000ms/simFrequency;
 	while (!quit)
 	{
@@ -29,7 +28,6 @@ void simOnThread(SimDynamic& simulator, bool& quit, int simFrequency)
 }
 void renderOnThread(SimDynamic& simulator, Graphics& graphics, bool& quit, bool cargo, int FPS)
 {
-	std::cout << "entering rendering thread" << '\n';
 	std::vector<double> xk;
 	Uint32 timeoutRender = SDL_GetTicks() + 1000 / FPS;
 	while (!quit)
@@ -44,7 +42,6 @@ void renderOnThread(SimDynamic& simulator, Graphics& graphics, bool& quit, bool 
 	}
 }
 
-
 int main(int argc, char* args[])
 {
 	GUI gui;
@@ -52,6 +49,8 @@ int main(int argc, char* args[])
 
 	bool cargo = gui.getCargoChoice();
 	bool keyboard = gui.getKeyboardChoice();
+	
+	if (!gui.isGuiFinished()) return 0;
 
 	int FPS = 60;
 	int SimPS = 100;

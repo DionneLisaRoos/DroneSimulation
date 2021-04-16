@@ -29,7 +29,6 @@ public:
 		{
 			x.push_back(eulerForward(x.at(i - 1), u.at(i - 1)));
 			graphics.updateGraphics(x.at(i));
-			std::cout << t.at(i) << "\n";
 		}
 	};
 
@@ -41,7 +40,6 @@ public:
 		{
 			x.push_back(rungeKutta(x.at(i - 1), u.at(i - 1)));
 			graphics.updateGraphics(x.at(i));
-			std::cout << t.at(i) << "\n";
 		}
 	};
 
