@@ -31,7 +31,7 @@ class GUI
 {
 public:
 	// Set initial values to these booleans and initialize the SLD window and load the images
-	GUI() : keyboard(false), cargo(false) {
+	GUI() : keyboard(false), cargo(false), gWindow(NULL), gRenderer(NULL){
 		// The boolean done is used to see whether the whole settings GUI is being processed before quiting this page. 
 		// Because when the GUI is closed early, the simulation should not start. This boolean makes sure the program 
 		// does not start when the settings are not propperly set.
@@ -121,8 +121,8 @@ public:
 
 private:
 	// Private objects
-	SDL_Window* gWindow = NULL;
-	SDL_Renderer* gRenderer = NULL;
+	SDL_Window* gWindow;
+	SDL_Renderer* gRenderer;
 
 	// Create an SDL_rect array that holds all positions and sizes of all images
 	SDL_Rect gImages[static_cast<int>(Images::TOTAL_IMAGES)];
