@@ -65,36 +65,37 @@ int main(int argc, char* args[])
 
 	/* dynamic */
 
-	int FPS = 30;
+	//frames per second, simulation steps per second
+	int FPS = 60;
 	int SimPS = 100;
-	int InputPS = 100;
 	double timeStep = 1.0/SimPS;
-	//double timeStep = 0.005;
+
+	// global exit flag
 	bool quit = 0 ;
+
+	// flag for tracking keypresses, input values, increase for more drone yeet
+	bool KeyRight = 0, KeyLeft = 0, KeyUp = 0, KeyDown = 0;
 	double maxThrust = 4 * 5 * 9.81;
-	double tiltRate = 30;
+	double tiltRate = 60;
+
+	// initial position of the drone
 	std::vector<double> initialState = { 0, 1, 0, 0, 0, 0, 1, 0, 0 };
 	std::array<double, 2> initialInput = {5*9.81, 0};
 	
-	// flags to track key input
-	bool KeyRight=0, KeyLeft=0, KeyUp=0;
-
 	// initialize graphics, simulator, timeout duration and event handler
 	Graphics graphics(1);
 	SimDynamic dynamicSimulator(initialState, initialInput, timeStep, FPS);
 
-	// pass initial values to working variables
-	std::vector<double> xk = initialState;
-	std::array<double,2> uk = initialInput;
-	
+	// to thread or not to thread, that is the question
 	bool thread=1;
 
+	// event obj
 	SDL_Event e;
 
 	// gameloop threaded
 	if (thread)
 	{
-		std::cout << "entering thread-if" << '\n';
+		std::cout << "entering threaded simulation" << '\n';
 		std::thread simThread(simOnThread, std::ref(dynamicSimulator), std::ref(quit), SimPS);
 		std::thread renderThread(renderOnThread, std::ref(dynamicSimulator), std::ref(graphics), std::ref(quit), FPS);
 		std::cout << "created threads." << '\n';
@@ -105,24 +106,21 @@ int main(int argc, char* args[])
 			{
 				switch (e.type)
 				{
-					// handle keypresses
+				// handle keypresses
 				case SDL_KEYDOWN:
 					switch (e.key.keysym.sym)
 					{
 					case SDLK_UP:
-						mtx.lock();
-						dynamicSimulator.setInput(0, maxThrust);
-						mtx.unlock();
+						KeyUp = 1;
+						break;
+					case SDLK_DOWN:
+						KeyDown = 1;
 						break;
 					case SDLK_LEFT:
-						mtx.lock();
-						dynamicSimulator.setInput(1, tiltRate);
-						mtx.unlock();
+						KeyLeft = 1;
 						break;
 					case SDLK_RIGHT:
-						mtx.lock();
-						dynamicSimulator.setInput(1, -tiltRate);
-						mtx.unlock();
+						KeyRight = 1;
 						break;
 					case SDLK_q:
 						mtx.lock();
@@ -138,24 +136,21 @@ int main(int argc, char* args[])
 						break;
 					}
 					break;
-					// handle keyreleases
+				// handle keyreleases
 				case SDL_KEYUP:
 					switch (e.key.keysym.sym)
 					{
 					case SDLK_UP:
-						mtx.lock();
-						dynamicSimulator.setInput(0, 0);
-						mtx.unlock();
+						KeyUp = 0;
+						break;
+					case SDLK_DOWN:
+						KeyDown = 0;
 						break;
 					case SDLK_LEFT:
-						mtx.lock();
-						dynamicSimulator.setInput(1, 0);
-						mtx.unlock();
+						KeyLeft = 0;
 						break;
 					case SDLK_RIGHT:
-						mtx.lock();
-						dynamicSimulator.setInput(1, 0);
-						mtx.unlock();
+						KeyRight = 0;
 						break;
 					default:
 						break;
@@ -164,8 +159,18 @@ int main(int argc, char* args[])
 				default:
 					break;
 				}
-				std::cout << "processed an event\n";
+			mtx.lock();
+			if (!KeyDown && KeyUp) dynamicSimulator.setInput(0, maxThrust);
+			else if (KeyDown && !KeyUp) dynamicSimulator.setInput(0, -maxThrust);
+			else dynamicSimulator.setInput(0, 0);
+
+			if (!KeyLeft && KeyRight) dynamicSimulator.setInput(1, -tiltRate);
+			else if (KeyLeft && !KeyRight) dynamicSimulator.setInput(1, tiltRate);
+			else dynamicSimulator.setInput(1, 0);
+			mtx.unlock();
+			std::cout << "processed an event\n";
 			}// end processing event
+
 		}
 		std::cout << "quit." << '\n';
 
@@ -178,7 +183,14 @@ int main(int argc, char* args[])
 	// unthreaded
 	else
 	{
+		// flags to track key input
+		bool KeyRight = 0, KeyLeft = 0, KeyUp = 0;
 		Uint32 timeout = SDL_GetTicks() + 1000 / FPS;
+
+		// pass initial values to working variables
+		std::vector<double> xk = initialState;
+		std::array<double, 2> uk = initialInput;
+
 		//main gameloop
 		while (!quit)
 		{
