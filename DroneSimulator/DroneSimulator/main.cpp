@@ -5,6 +5,7 @@
 #include "SimDynamic.h"
 #include "InputStatic.h"
 #include <thread>
+#include <chrono>
 #include <mutex>
 
 
@@ -12,119 +13,36 @@ std::mutex mtx;
 
 void simOnThread(SimDynamic& simulator, bool& quit, int simFrequency)
 {
+	using namespace std::chrono_literals;
 	std::cout << "entered sim thread" << '\n';
-	Uint32 timeoutSim = SDL_GetTicks() + 1000 / simFrequency;
-	while (!quit)//access global quit?
+	std::chrono::duration<double, std::milli> sleepTime = 1000ms/simFrequency;
+	while (!quit)
 	{
-		while (!SDL_TICKS_PASSED(SDL_GetTicks(), timeoutSim)) 
-		{
-			//std::cout << "sim" << '\n';
-			mtx.lock();
-			simulator.updateStates();
-			mtx.unlock();
-		}
-		timeoutSim += 1000 / simFrequency;
+		auto preSim = std::chrono::high_resolution_clock::now();
+		mtx.lock();
+		simulator.updateStates();
+		mtx.unlock();
+		auto postSim = std::chrono::high_resolution_clock::now();
+		std::this_thread::sleep_for(sleepTime - (postSim - preSim));
 	}
 }
 void renderOnThread(SimDynamic& simulator, Graphics& graphics, bool& quit, int FPS)
 {
-	std::cout << "entering render thread" << '\n';
+	std::cout << "entering rendering thread" << '\n';
 	std::vector<double> xk;
 	Uint32 timeoutRender = SDL_GetTicks() + 1000 / FPS;
-	while (!quit)//access global quit?
+	while (!quit)
 	{
 		while (!SDL_TICKS_PASSED(SDL_GetTicks(), timeoutRender))
 		{
-			//std::cout << "render" << '\n';
+			// fetch current state, and render updated graphics
 			xk = simulator.getState();
 			graphics.updateGraphics(xk.at(0), xk.at(1), xk.at(2), xk.at(5), xk.at(6));
 		}
 		timeoutRender += 1000 / FPS;
 	}
-
 }
-void handleInputOnTread(SimDynamic& simulator, bool& quit, int InputFrequency)
-{ 
-	SDL_Event e;
-	Uint32 timeoutInput = SDL_GetTicks() + 1000 / InputFrequency;
-	std::cout << "entering input handler" << '\n';
-	double maxThrust = 4 * 5 * 9.81;
-	double tiltRate = 30;
-	while (!quit)
-	{
-		while (!SDL_TICKS_PASSED(SDL_GetTicks(), timeoutInput))
-		{
-			while (SDL_PollEvent(&e))
-			{
-				switch (e.type)
-				{
-					// handle keypresses
-				case SDL_KEYDOWN:
-					switch (e.key.keysym.sym)
-					{
-					case SDLK_UP:
-						mtx.lock();
-						simulator.setInput(0, maxThrust);
-						mtx.unlock();
-						break;
-					case SDLK_LEFT:
-						mtx.lock();
-						simulator.setInput(1, tiltRate);
-						mtx.unlock();
-						break;
-					case SDLK_RIGHT:
-						mtx.lock();
-						simulator.setInput(1, -tiltRate);
-						mtx.unlock();
-						break;
-					case SDLK_q:
-						mtx.lock();
-						quit = 1;
-						mtx.unlock();
-						break;
-					case SDLK_ESCAPE:
-						mtx.lock();
-						quit = 1;
-						mtx.unlock();
-						break;
-					default:
-						break;
-					}
-					break;
-					// handle keyreleases
-				case SDL_KEYUP:
-					switch (e.key.keysym.sym)
-					{
-					case SDLK_UP:
-						mtx.lock();
-						simulator.setInput(0, 0);
-						mtx.unlock();
-						break;
-					case SDLK_LEFT:
-						mtx.lock();
-						simulator.setInput(1, 0);
-						mtx.unlock();
-						break;
-					case SDLK_RIGHT:
-						mtx.lock();
-						simulator.setInput(1, 0);
-						mtx.unlock();
-						break;
-					default:
-						break;
-					}
-					break;
-				default:
-					break;
-				}
-			std::cout << "processed an event\n";
-			}// end processing event
-		}
-		std::cout << "InputHandler Loop complete\n";
-		timeoutInput += 1000 / InputFrequency;
-	}
 
-}
 
 int main(int argc, char* args[])
 {
@@ -171,18 +89,88 @@ int main(int argc, char* args[])
 	
 	bool thread=1;
 
+	SDL_Event e;
+
 	// gameloop threaded
 	if (thread)
 	{
 		std::cout << "entering thread-if" << '\n';
-		std::thread sim(simOnThread, std::ref(dynamicSimulator), std::ref(quit), SimPS);
-		std::thread render(renderOnThread, std::ref(dynamicSimulator), std::ref(graphics), std::ref(quit), FPS);
-		std::thread inputHandler(handleInputOnTread, std::ref(dynamicSimulator), std::ref(quit), InputPS);
-		std::cout << "created threads?" << '\n';
+		std::thread simThread(simOnThread, std::ref(dynamicSimulator), std::ref(quit), SimPS);
+		std::thread renderThread(renderOnThread, std::ref(dynamicSimulator), std::ref(graphics), std::ref(quit), FPS);
+		std::cout << "created threads." << '\n';
 
-		sim.join();
-		render.join();
-		inputHandler.join();
+		while (!quit)
+		{
+			while (SDL_PollEvent(&e))
+			{
+				switch (e.type)
+				{
+					// handle keypresses
+				case SDL_KEYDOWN:
+					switch (e.key.keysym.sym)
+					{
+					case SDLK_UP:
+						mtx.lock();
+						dynamicSimulator.setInput(0, maxThrust);
+						mtx.unlock();
+						break;
+					case SDLK_LEFT:
+						mtx.lock();
+						dynamicSimulator.setInput(1, tiltRate);
+						mtx.unlock();
+						break;
+					case SDLK_RIGHT:
+						mtx.lock();
+						dynamicSimulator.setInput(1, -tiltRate);
+						mtx.unlock();
+						break;
+					case SDLK_q:
+						mtx.lock();
+						quit = 1;
+						mtx.unlock();
+						break;
+					case SDLK_ESCAPE:
+						mtx.lock();
+						quit = 1;
+						mtx.unlock();
+						break;
+					default:
+						break;
+					}
+					break;
+					// handle keyreleases
+				case SDL_KEYUP:
+					switch (e.key.keysym.sym)
+					{
+					case SDLK_UP:
+						mtx.lock();
+						dynamicSimulator.setInput(0, 0);
+						mtx.unlock();
+						break;
+					case SDLK_LEFT:
+						mtx.lock();
+						dynamicSimulator.setInput(1, 0);
+						mtx.unlock();
+						break;
+					case SDLK_RIGHT:
+						mtx.lock();
+						dynamicSimulator.setInput(1, 0);
+						mtx.unlock();
+						break;
+					default:
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+				std::cout << "processed an event\n";
+			}// end processing event
+		}
+		std::cout << "quit." << '\n';
+
+		simThread.join();
+		renderThread.join();
 		std::cout << "Joined all threads!" << '\n';
 		dynamicSimulator.writeCSV();
 	}
@@ -191,7 +179,6 @@ int main(int argc, char* args[])
 	else
 	{
 		Uint32 timeout = SDL_GetTicks() + 1000 / FPS;
-		SDL_Event e;
 		//main gameloop
 		while (!quit)
 		{
