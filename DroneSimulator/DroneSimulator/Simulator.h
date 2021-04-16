@@ -7,7 +7,6 @@
 //==============================================================
 
 #pragma once
-#include <iostream>
 #include <vector>
 #include <array>
 #include <cmath>
@@ -20,8 +19,9 @@
 class Simulator
 {
 public:
-	Simulator() {};
-	~Simulator() {};
+	Simulator() {}
+
+	~Simulator() {}
 
 protected:
 	// system variables
@@ -29,6 +29,7 @@ protected:
 	std::vector<std::vector<double>> x;
 	std::vector<double> t;
 	std::vector<std::array<double, 2>> u;
+	std::vector<std::array<double, 2>> y;
 
 	// one step of runge kutta integration
 	std::vector<double> eulerForward(std::vector<double> xk, std::array<double, 2> u)
@@ -84,7 +85,7 @@ protected:
 		output << "time" << delimiter << "thrust" << delimiter << "tilt" << delimiter << "x_drone" << delimiter << "y_drone" << delimiter << "theta" << delimiter << "xdot_drone" << delimiter << "ydot_drone";
 		if ((x.front()).size() == 9)
 		{
-			output << delimiter << "x_cargo" << delimiter << "y_cargo" << delimiter << "xdot_cargo" << delimiter << "ydot_cargo";
+			output << delimiter << "x_cargo" << delimiter << "y_cargo" << delimiter << "xdot_cargo" << delimiter << "ydot_cargo" << delimiter << "l_rope" << delimiter << "ldot_rope";
 		}
 		output << '\n';
 
@@ -98,7 +99,7 @@ protected:
 			{
 				output << delimiter << *it ;
 			}
-			output << '\n';
+			output << delimiter << y.at(i).at(0) << delimiter << y.at(i).at(1) << '\n';
 		}
 		output.close();
 	}
@@ -122,23 +123,24 @@ private:
 		// dynamics for drone with cargo
 		else if (x.size() == 9)
 		{
-			std::array<double, 2> y; // ropeLength and ropeLengthDot
+			std::array<double, 2> yk; // ropeLength and ropeLengthDot
 		//  y1   = sqrt( (   x1   - x6)^2    + (   x2   - x7)^2 )
 		//  y2   = ( (x1   - x6)   * (x4   -  x8)  + (x2   - x7)   * (x5   - x9)  ) / y1
-			y[0] = sqrt( pow(x[0] - x[5], 2) + pow(x[1] - x[6], 2));
-			if (y[0] == 0)	y[1] = 0;
-			else			y[1] = ((x[0] - x[5]) * (x[3] - x[7]) + (x[1] - x[6]) * (x[4] - x[8])) / y[0];
-			
+			yk[0] = sqrt( pow(x[0] - x[5], 2) + pow(x[1] - x[6], 2));
+			if (yk[0] == 0)	yk[1] = 0;
+			else			yk[1] = ((x[0] - x[5]) * (x[3] - x[7]) + (x[1] - x[6]) * (x[4] - x[8])) / yk[0];
 
-			double Frope = stiffnessRope * (y[0] - lengthRope0) + dampingRope * y[1];
+			y.push_back(yk);
+			
+			double Frope = stiffnessRope * (yk[0] - lengthRope0) + dampingRope * yk[1];
 			double Fropex;
 			double Fropey;
 
 			// only apply force if there is tension in the rope
 			if (Frope > 0)
 			{
-				Fropex = Frope * (x[0] - x[5]) / y[0];
-				Fropey = Frope * (x[1] - x[6]) / y[0];
+				Fropex = Frope * (x[0] - x[5]) / yk[0];
+				Fropey = Frope * (x[1] - x[6]) / yk[0];
 			}
 			else
 			{
