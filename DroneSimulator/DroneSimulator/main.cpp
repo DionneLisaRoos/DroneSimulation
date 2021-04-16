@@ -8,7 +8,7 @@
 //				 Then we start the game accourding to the given settings. Either a drone simulator with 
 //				 or withour cargo is started and this can be done using file input or keyboard input. 
 //				 When keyboard input is used, we will use a multithreaded program. When an input file is used, 
-//				 the program excecutes synchronous. 
+//				 the program excecutes single threaded. 
 //==============================================================
 
 #include "Graphics.h"
@@ -20,7 +20,7 @@
 #include <chrono>
 #include <mutex>
 
-// mutex used for multiple read and write to same memory
+// mutex used when writing or reading memory that is accesible by multiple threads
 std::mutex mtx;
 
 // simulator thread that calculates the dyanmics using a certain frequency (100 Hz in this case)
@@ -29,7 +29,8 @@ void simOnThread(SimDynamic& simulator, bool& quit, int simFrequency)
 	using namespace std::chrono_literals;
 	std::chrono::duration<double, std::milli> sleepTime = 1000ms/simFrequency;
 
-	// As long the program did not quit, the dynamics of the system are calculated with 100 Hz
+	// As long the program did not quit, the dynamics of the system are calculated with simFrequency Hz
+	// uses chrono to subtract simulation time from sleeptime
 	while (!quit)
 	{
 		auto preSim = std::chrono::high_resolution_clock::now();
@@ -44,10 +45,11 @@ void simOnThread(SimDynamic& simulator, bool& quit, int simFrequency)
 // Graphics thread
 void renderOnThread(SimDynamic& simulator, Graphics& graphics, bool& quit, bool cargo, int FPS)
 {
+	// store the current state on thread and define time target in 1000ms/FPS from now
 	std::vector<double> xk;
 	Uint32 timeoutRender = SDL_GetTicks() + 1000 / FPS;
 
-	// As long the program did not quit, the graphics is updated with the calculated dynamics with 30 FPS. 
+	// As long the program did not quit, the graphics is updated with the calculated dynamics at (FPS) frequency 
 	while (!quit)
 	{
 		while (!SDL_TICKS_PASSED(SDL_GetTicks(), timeoutRender))
@@ -56,13 +58,15 @@ void renderOnThread(SimDynamic& simulator, Graphics& graphics, bool& quit, bool 
 			xk = simulator.getState();
 			graphics.updateGraphics(xk);
 		}
+		// set next time target 1000ms/FPS further in time
 		timeoutRender += 1000 / FPS;
 	}
 }
 
+
 int main(int argc, char* args[])
 {
-	// Start gui
+	// Instantiate gui
 	GUI gui;
 	gui.startGUI();
 
@@ -144,9 +148,6 @@ int main(int argc, char* args[])
 		Graphics graphics;
 		SimDynamic dynamicSimulator(initialState, initialInput, timeStep, FPS);
 
-		// to thread or not to thread, that is the question
-		bool thread = 1;
-
 		// event obj
 		SDL_Event e;
 
@@ -156,6 +157,7 @@ int main(int argc, char* args[])
 
 		while (!quit)
 		{
+			// SDL_PollEvent(&e) returns 0 is no event- and 1 if an event happened
 			while (SDL_PollEvent(&e))
 			{
 				switch (e.type)
@@ -213,8 +215,8 @@ int main(int argc, char* args[])
 				default:
 					break;
 				}
-				mtx.lock();
 				// Update the input thrust and input tilt in the dynamic simulator object
+				mtx.lock();
 				if (!KeyDown && KeyUp) dynamicSimulator.setInput(0, maxThrust);
 				else if (KeyDown && !KeyUp) dynamicSimulator.setInput(0, -maxThrust);
 				else dynamicSimulator.setInput(0, 0);
@@ -224,16 +226,15 @@ int main(int argc, char* args[])
 				else dynamicSimulator.setInput(1, 0);
 				mtx.unlock();
 			}// end processing event
+		}// exiting main game loop
 
-		}
-
-		// Start all threads
+		// rejoin all threads
 		simThread.join();
 		renderThread.join();
 
-		// After closing threads, write output to file
+		// write output of simulation to file
 		dynamicSimulator.writeCSV(filename);
-	}
+	}// end main()
 
 	return 0;
 }
