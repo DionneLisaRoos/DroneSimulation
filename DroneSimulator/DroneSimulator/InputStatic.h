@@ -1,3 +1,11 @@
+//==============================================================
+// Filename : InputStatic.h
+// Authors : Dionne Ariëns and Marnick Los.
+// Version : -
+// License : -
+// Description : 
+//==============================================================
+
 #pragma once
 #include <iostream>
 #include <vector>

@@ -1,3 +1,11 @@
+//==============================================================
+// Filename : SimStatic.h
+// Authors : Dionne Ariëns and Marnick Los.
+// Version : -
+// License : -
+// Description : 
+//==============================================================
+
 #pragma once
 #include "Simulator.h"
 #include "InputStatic.h"
@@ -49,9 +57,6 @@ public:
 
 private:
 	//storage variables
-	std::vector<std::vector<double>> x;
-	std::vector<double> t;
-	std::vector<std::array<double, 2>> u;
 	std::vector<double> x0;
 	Graphics graphics;
 };

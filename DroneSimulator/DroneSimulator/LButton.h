@@ -1,3 +1,11 @@
+//==============================================================
+// Filename : LButton.h
+// Authors : Dionne Ariëns and Marnick Los.
+// Version : -
+// License : -
+// Description : 
+//==============================================================
+
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>

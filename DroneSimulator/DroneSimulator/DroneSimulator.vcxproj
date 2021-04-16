@@ -149,14 +149,12 @@
   <ItemGroup>
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="GUI.h" />
-    <ClInclude Include="InputKeyboard.h" />
     <ClInclude Include="InputStatic.h" />
     <ClInclude Include="LButton.h" />
     <ClInclude Include="LTexture.h" />
     <ClInclude Include="SimDynamic.h" />
     <ClInclude Include="SimStatic.h" />
     <ClInclude Include="Simulator.h" />
-    <ClInclude Include="Threads.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,13 @@
+//==============================================================
+// Filename : SimDynamic.h
+// Authors : Dionne Ariëns and Marnick Los.
+// Version : -
+// License : -
+// Description : 
+//==============================================================
+
 #pragma once
 #include "Simulator.h"
-#include "InputKeyboard.h"
 #include "Graphics.h"
 
 class SimDynamic : public Simulator
@@ -69,9 +76,6 @@ public:
 
 private:
 	// storage variables
-	std::vector<double> t;
-	std::vector<std::vector<double>> x;
-	std::vector<std::array<double, 2>> u;
 	std::vector<double> xk;
 	std::array<double,2> uk;
 

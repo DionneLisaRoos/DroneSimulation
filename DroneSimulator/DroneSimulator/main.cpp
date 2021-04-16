@@ -1,3 +1,11 @@
+//==============================================================
+// Filename : main.cpp
+// Authors : Dionne Ariëns and Marnick Los.
+// Version : -
+// License : -
+// Description : 
+//==============================================================
+
 #include <iostream>
 #include "SDL.h"
 #include "Graphics.h"
@@ -52,7 +60,7 @@ int main(int argc, char* args[])
 	
 	if (!gui.isGuiFinished()) return 0;
 
-	int FPS = 60;
+	int FPS = 30;
 	int SimPS = 100;
 	double timeStep = 1.0 / SimPS;
 
@@ -63,7 +71,7 @@ int main(int argc, char* args[])
 			InputStatic input("inputDroneAndCargo.csv", timeStep);
 			SimStatic staticSimulation(initialState, input, timeStep);
 			staticSimulation.staticSimulateFullRungeKutta();
-			staticSimulation.WriteCSV("outputEulerDroneAndCargo.csv");
+			staticSimulation.WriteCSV("outputRungeKuttaDroneAndCargo.csv");
 		}
 		else {
 			std::vector<double> initialState = { 0, 0, 0, 0, 0 };
@@ -80,7 +88,7 @@ int main(int argc, char* args[])
 
 		// flag for tracking keypresses, input values, increase for more drone yeet
 		bool KeyRight = 0, KeyLeft = 0, KeyUp = 0, KeyDown = 0;
-		double maxThrust = 2 * 5 * 9.81;
+		double maxThrust = 0;
 		double tiltRate = 17.2;
 
 		// initial position of the drone
@@ -91,10 +99,12 @@ int main(int argc, char* args[])
 		if (cargo) {
 			initialState = { 0, 1, 0, 0, 0, 0, 0, 0, 0 };	
 			filename = "DynamicSimDroneAndCargo.csv";
+			maxThrust = 2 * 5 * 9.81;
 		}
 		else {
 			initialState = { 0, 0, 0, 0, 0 };	
 			filename = "DynamicSimDrone.csv";
+			maxThrust = 2 * 3 * 9.81;
 		}
 
 		// initialize graphics, simulator, timeout duration and event handler

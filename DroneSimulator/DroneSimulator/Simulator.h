@@ -1,3 +1,11 @@
+//==============================================================
+// Filename : Simulator.h
+// Authors : Dionne Ariëns and Marnick Los.
+// Version : -
+// License : -
+// Description : 
+//==============================================================
+
 #pragma once
 #include <iostream>
 #include <vector>
@@ -18,6 +26,9 @@ public:
 protected:
 	// system variables
 	double timeStep;
+	std::vector<std::vector<double>> x;
+	std::vector<double> t;
+	std::vector<std::array<double, 2>> u;
 
 	// one step of runge kutta integration
 	std::vector<double> eulerForward(std::vector<double> xk, std::array<double, 2> u)
