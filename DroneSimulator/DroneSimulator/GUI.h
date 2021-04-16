@@ -145,7 +145,7 @@ private:
 
 	bool loadMedia()
 	{
-		if (!gDrone.loadFromFile("drone.png")) { printf("Failed to load drone.pgn!\n"); return false; }
+		if (!gDrone.loadFromFile("DroneButton.png")) { printf("Failed to load DroneButton.pgn!\n"); return false; }
 		if (!gDroneWithCargo.loadFromFile("DroneAndCargo.png")) { printf("Failed to load DroneAndCargo.png!\n"); return false; }
 		if (!gKeyboard.loadFromFile("Keyboard.png")) { printf("Failed to load Keyboard.png!\n"); return false; }
 		if (!gCSVfile.loadFromFile("CSV.png")) { printf("Failed to load CSV.png!\n"); return false; }

@@ -80,8 +80,8 @@ int main(int argc, char* args[])
 
 		// flag for tracking keypresses, input values, increase for more drone yeet
 		bool KeyRight = 0, KeyLeft = 0, KeyUp = 0, KeyDown = 0;
-		double maxThrust = 4 * 5 * 9.81;
-		double tiltRate = 60;
+		double maxThrust = 2 * 5 * 9.81;
+		double tiltRate = 17.2;
 
 		// initial position of the drone
 		std::array<double, 2> initialInput = { 5 * 9.81, 0 };
