@@ -100,13 +100,13 @@ public:
 		droneY = y + DRONE_CENTER_H;
 
 		SDL_Rect renderQuad = { x, y, droneWidth, droneHeight };
-		SDL_RenderCopyEx(gRenderer, droneTexture, clip, &renderQuad, -angle, center, flip);
+		SDL_RenderCopyEx(gRenderer, droneTexture, clip, &renderQuad, angle, center, flip);
 		std::cout << "drone xy: " << (x + DRONE_CENTER_W) << " " << (y + DRONE_CENTER_H) << std::endl;
 
 
 		if (withCargo) {
 			SDL_Rect renderQuad = { cargox, cargoy, cargoWidth, cargoHeight };
-			SDL_RenderCopyEx(gRenderer, cargoTexture, clip, &renderQuad, -cargoAngle, center, flip);
+			SDL_RenderCopyEx(gRenderer, cargoTexture, clip, &renderQuad, cargoAngle, center, flip);
 			std::cout << "cargo xy: " << (x + CARGO_CENTER_W) << " " << (y + CARGO_SIDE_TO_DRONE_H) << std::endl;
 
 			SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
@@ -125,7 +125,7 @@ public:
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
 		render(INIT_DRONE_W + pixelX, INIT_DRONE_H + pixelY, cargo, NULL, degrees, INIT_CARGO_W + px, INIT_CARGO_H + py, cargoDegrees);
-
+		
 		SDL_RenderPresent(gRenderer);
 	}
 
