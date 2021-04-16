@@ -270,4 +270,5 @@
   Note: including file:   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\ratio
   Note: including file:  C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\tuple
   Note: including file: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29333\include\mutex
+  LINK : C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\Debug\DroneSimulator.exe not found or not built by the last incremental link; performing full link
   DroneSimulator.vcxproj -> C:\Users\Dionne Ariens\OneDrive\Documenten\UT\Kwartiel 3\P2\DroneProject\DroneSimulator\Debug\DroneSimulator.exe
