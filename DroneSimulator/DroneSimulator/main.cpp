@@ -231,7 +231,7 @@ int main(int argc, char* args[])
 		// rejoin all threads
 		simThread.join();
 		renderThread.join();
-
+		graphics.close();
 		// write output of simulation to file
 		dynamicSimulator.writeCSV(filename);
 	}// end main()

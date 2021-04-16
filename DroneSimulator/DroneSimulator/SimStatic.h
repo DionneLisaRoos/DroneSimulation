@@ -31,7 +31,10 @@ public:
 		t = input.getTime();
 	}
 
-	~SimStatic() {}
+	~SimStatic() 
+	{
+		graphics.close();
+	}
 
 	// simulate full time duraion using Euler forward
 	void staticSimulateFullEuler()
