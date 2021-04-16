@@ -61,9 +61,8 @@ public:
 		return xk;
 	}
 
-	void writeCSV() 
+	void writeCSV(std::string fileName)
 	{
-		std::string fileName = "DynTest.csv";
 		WriteCSVHelper(fileName, u, t, x);
 	}
 

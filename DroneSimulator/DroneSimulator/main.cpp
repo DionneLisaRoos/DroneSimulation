@@ -4,6 +4,7 @@
 #include "SimStatic.h"
 #include "SimDynamic.h"
 #include "InputStatic.h"
+#include "GUI.h"
 #include <thread>
 #include <chrono>
 #include <mutex>
@@ -26,7 +27,7 @@ void simOnThread(SimDynamic& simulator, bool& quit, int simFrequency)
 		std::this_thread::sleep_for(sleepTime - (postSim - preSim));
 	}
 }
-void renderOnThread(SimDynamic& simulator, Graphics& graphics, bool& quit, int FPS)
+void renderOnThread(SimDynamic& simulator, Graphics& graphics, bool& quit, bool cargo, int FPS)
 {
 	std::cout << "entering rendering thread" << '\n';
 	std::vector<double> xk;
@@ -37,7 +38,7 @@ void renderOnThread(SimDynamic& simulator, Graphics& graphics, bool& quit, int F
 		{
 			// fetch current state, and render updated graphics
 			xk = simulator.getState();
-			graphics.updateGraphics(xk.at(0), xk.at(1), xk.at(2), xk.at(5), xk.at(6));
+			graphics.updateGraphics(xk);
 		}
 		timeoutRender += 1000 / FPS;
 	}
@@ -46,59 +47,70 @@ void renderOnThread(SimDynamic& simulator, Graphics& graphics, bool& quit, int F
 
 int main(int argc, char* args[])
 {
-	/* static */
-	/*
-	double timeStep = 0.01;
-	InputStatic input("input.csv", timeStep);
-	std::vector<double> initialState = {0, 1, 0, 0, 0,0,0,0,0};
-	std::vector<double> initialState = { 0, 0, 0, 0, 0 };
+	GUI gui;
+	gui.startGUI();
 
-	SimStatic staticSimulation(initialState, input, timeStep, 1);
-	staticSimulation.staticSimulateFullEuler();
-	staticSimulation.WriteCSV("outputEuler.csv");
+	bool cargo = gui.getCargoChoice();
+	bool keyboard = gui.getKeyboardChoice();
 
-	std::cout << "next\n";
-
-	staticSimulation.staticSimulateFullRungeKutta();
-	staticSimulation.WriteCSV("outputKutta.csv");
-	*/
-
-	/* dynamic */
-
-	//frames per second, simulation steps per second
 	int FPS = 60;
 	int SimPS = 100;
-	double timeStep = 1.0/SimPS;
+	double timeStep = 1.0 / SimPS;
 
-	// global exit flag
-	bool quit = 0 ;
+	if (!keyboard) {
+		if (cargo) {
+			std::vector<double> initialState = { 0, 1, 0, 0, 0,0,0,0,0 };
 
-	// flag for tracking keypresses, input values, increase for more drone yeet
-	bool KeyRight = 0, KeyLeft = 0, KeyUp = 0, KeyDown = 0;
-	double maxThrust = 4 * 5 * 9.81;
-	double tiltRate = 60;
+			InputStatic input("inputDroneAndCargo.csv", timeStep);
+			SimStatic staticSimulation(initialState, input, timeStep);
+			staticSimulation.staticSimulateFullRungeKutta();
+			staticSimulation.WriteCSV("outputEulerDroneAndCargo.csv");
+		}
+		else {
+			std::vector<double> initialState = { 0, 0, 0, 0, 0 };
 
-	// initial position of the drone
-	std::vector<double> initialState = { 0, 1, 0, 0, 0, 0, 1, 0, 0 };
-	std::array<double, 2> initialInput = {5*9.81, 0};
-	
-	// initialize graphics, simulator, timeout duration and event handler
-	Graphics graphics(1);
-	SimDynamic dynamicSimulator(initialState, initialInput, timeStep, FPS);
+			InputStatic input("inputDrone.csv", timeStep);
+			SimStatic staticSimulation(initialState, input, timeStep);
+			staticSimulation.staticSimulateFullEuler();
+			staticSimulation.WriteCSV("outputEulerDrone.csv");
+		}
+	}
+	else {
+		// global exit flag
+		bool quit = 0;
 
-	// to thread or not to thread, that is the question
-	bool thread=1;
+		// flag for tracking keypresses, input values, increase for more drone yeet
+		bool KeyRight = 0, KeyLeft = 0, KeyUp = 0, KeyDown = 0;
+		double maxThrust = 4 * 5 * 9.81;
+		double tiltRate = 60;
 
-	// event obj
-	SDL_Event e;
+		// initial position of the drone
+		std::array<double, 2> initialInput = { 5 * 9.81, 0 };
+		std::vector<double> initialState;
+		std::string filename = "";
 
-	// gameloop threaded
-	if (thread)
-	{
-		std::cout << "entering threaded simulation" << '\n';
+		if (cargo) {
+			initialState = { 0, 1, 0, 0, 0, 0, 0, 0, 0 };	
+			filename = "DynamicSimDroneAndCargo.csv";
+		}
+		else {
+			initialState = { 0, 0, 0, 0, 0 };	
+			filename = "DynamicSimDrone.csv";
+		}
+
+		// initialize graphics, simulator, timeout duration and event handler
+		Graphics graphics;
+		SimDynamic dynamicSimulator(initialState, initialInput, timeStep, FPS);
+
+		// to thread or not to thread, that is the question
+		bool thread = 1;
+
+		// event obj
+		SDL_Event e;
+
+		// gameloop threaded
 		std::thread simThread(simOnThread, std::ref(dynamicSimulator), std::ref(quit), SimPS);
-		std::thread renderThread(renderOnThread, std::ref(dynamicSimulator), std::ref(graphics), std::ref(quit), FPS);
-		std::cout << "created threads." << '\n';
+		std::thread renderThread(renderOnThread, std::ref(dynamicSimulator), std::ref(graphics), std::ref(quit), cargo, FPS);
 
 		while (!quit)
 		{
@@ -106,7 +118,7 @@ int main(int argc, char* args[])
 			{
 				switch (e.type)
 				{
-				// handle keypresses
+					// handle keypresses
 				case SDL_KEYDOWN:
 					switch (e.key.keysym.sym)
 					{
@@ -136,7 +148,7 @@ int main(int argc, char* args[])
 						break;
 					}
 					break;
-				// handle keyreleases
+					// handle keyreleases
 				case SDL_KEYUP:
 					switch (e.key.keysym.sym)
 					{
@@ -159,107 +171,22 @@ int main(int argc, char* args[])
 				default:
 					break;
 				}
-			mtx.lock();
-			if (!KeyDown && KeyUp) dynamicSimulator.setInput(0, maxThrust);
-			else if (KeyDown && !KeyUp) dynamicSimulator.setInput(0, -maxThrust);
-			else dynamicSimulator.setInput(0, 0);
+				mtx.lock();
+				if (!KeyDown && KeyUp) dynamicSimulator.setInput(0, maxThrust);
+				else if (KeyDown && !KeyUp) dynamicSimulator.setInput(0, -maxThrust);
+				else dynamicSimulator.setInput(0, 0);
 
-			if (!KeyLeft && KeyRight) dynamicSimulator.setInput(1, -tiltRate);
-			else if (KeyLeft && !KeyRight) dynamicSimulator.setInput(1, tiltRate);
-			else dynamicSimulator.setInput(1, 0);
-			mtx.unlock();
-			std::cout << "processed an event\n";
+				if (!KeyLeft && KeyRight) dynamicSimulator.setInput(1, -tiltRate);
+				else if (KeyLeft && !KeyRight) dynamicSimulator.setInput(1, tiltRate);
+				else dynamicSimulator.setInput(1, 0);
+				mtx.unlock();
 			}// end processing event
 
 		}
-		std::cout << "quit." << '\n';
 
 		simThread.join();
 		renderThread.join();
-		std::cout << "Joined all threads!" << '\n';
-		dynamicSimulator.writeCSV();
-	}
-
-	// unthreaded
-	else
-	{
-		// flags to track key input
-		bool KeyRight = 0, KeyLeft = 0, KeyUp = 0;
-		Uint32 timeout = SDL_GetTicks() + 1000 / FPS;
-
-		// pass initial values to working variables
-		std::vector<double> xk = initialState;
-		std::array<double, 2> uk = initialInput;
-
-		//main gameloop
-		while (!quit)
-		{
-			graphics.updateGraphics(xk.at(0), xk.at(1), xk.at(2), xk.at(5), xk.at(6));
-			xk = dynamicSimulator.simToNextFrame(uk);
-
-			// wait for 1/FPS seconds to pass and meanwhile handle key events
-			while (!SDL_TICKS_PASSED(SDL_GetTicks(), timeout)){
-				// Handle all input events
-				while (SDL_PollEvent(&e))
-				{
-					switch (e.type)
-					{
-					// handle registered keypresses
-					case SDL_KEYDOWN:
-						switch (e.key.keysym.sym)
-						{
-						case SDLK_LEFT:
-							KeyLeft = 1;
-							break;
-						case SDLK_RIGHT:
-							KeyRight = 1;
-							break;
-						case SDLK_UP:
-							KeyUp = 1;
-							break;
-						case SDLK_q:
-							quit = 1;
-							break;
-						case SDLK_ESCAPE:
-							quit = 1;
-							break;
-						default:
-							break;
-						}
-					break;
-					//handle keyreleases
-					case SDL_KEYUP:
-						switch (e.key.keysym.sym)
-						{
-						case SDLK_LEFT:
-							KeyLeft = 0;
-							break;
-						case SDLK_RIGHT:
-							KeyRight = 0;
-							break;
-						case SDLK_UP:
-							KeyUp = 0;
-							break;
-						default:
-							break;
-						}
-					break;
-					default:
-						break;
-					}
-				}//end processing event
-
-			// generate input values according to keypress flags
-			if (KeyUp)uk[0] = maxThrust;
-			else uk[0] = 0;
-			if (KeyLeft && !KeyRight) uk[1] = tiltRate;
-			else if (!KeyLeft && KeyRight) uk[1] = -tiltRate;
-			else uk[1] = 0;
-			}//exit time-to-next-render loop 
-
-			timeout += 1000 / FPS;
-		}
-	dynamicSimulator.writeCSV();
+		dynamicSimulator.writeCSV(filename);
 	}
 
 	return 0;

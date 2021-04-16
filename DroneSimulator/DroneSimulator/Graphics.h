@@ -1,3 +1,4 @@
+#pragma once
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdio.h>
@@ -6,7 +7,7 @@
 #include <iostream>
 #include <array>
 #include <algorithm>
-#pragma once
+#include <vector>
 
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
@@ -26,16 +27,13 @@ const int INIT_CARGO_H = (SCREEN_HEIGHT / 2) + CARGO_CENTER_TO_DRONE_H;
 class Graphics
 {
 public:
-	Graphics(bool Cargo) {
-		cargo = Cargo;
+	Graphics() {
 		droneTexture = NULL;
 		cargoTexture = NULL;
 		droneWidth = 0;
 		droneHeight = 0;
 		cargoWidth = 0;
 		cargoHeight = 0;
-		droneX = 0;
-		droneY = 0;
 
 		gWindow = NULL;
 		gRenderer = NULL;
@@ -50,43 +48,18 @@ public:
 	}
 
 	bool init() {
-		if (SDL_Init(SDL_INIT_VIDEO) < 0)
-		{
-			printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
-			return false;
-		}
-		else
-		{
-			if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) printf("Warning: Linear texture filtering not enabled!");
+		if (SDL_Init(SDL_INIT_VIDEO) < 0){ printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError()); return false;}
+		if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1")) printf("Warning: Linear texture filtering not enabled!");
 
-			gWindow = SDL_CreateWindow("Drone and Cargo game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-
-			if (gWindow == NULL)
-			{
-				printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
-				return false;
-			}
-			else
-			{
-				gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-
-				if (gRenderer == NULL)
-				{
-					printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-					return false;
-				}
-				else
-				{
-					int imgFlags = IMG_INIT_PNG;
-					if (!(IMG_Init(imgFlags) & imgFlags))
-					{
-						printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-						return false;
-					}
-				}
-			}
-		}
-
+		gWindow = SDL_CreateWindow("Drone and Cargo game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+		if (gWindow == NULL) { printf("Window could not be created! SDL Error: %s\n", SDL_GetError()); return false; }
+		
+		gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+		if (gRenderer == NULL){ printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError()); return false; }
+		
+		int imgFlags = IMG_INIT_PNG;
+		if (!(IMG_Init(imgFlags) & imgFlags)) { printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError()); return false; }
+		
 		return true;
 	}
 
@@ -95,36 +68,40 @@ public:
 		return loadFromFileHelper();
 	}
 
-	void render(int x, int y, bool withCargo, SDL_Rect* clip = NULL, double angle = 0.0, int cargox = 0, int cargoy = 0, double cargoAngle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE) {
-		droneX = x + DRONE_CENTER_W;
-		droneY = y + DRONE_CENTER_H;
-
-		SDL_Rect renderQuad = { x, y, droneWidth, droneHeight };
-		SDL_RenderCopyEx(gRenderer, droneTexture, clip, &renderQuad, -angle, center, flip);
-		//std::cout << "drone xy: " << (x + DRONE_CENTER_W) << " " << (y + DRONE_CENTER_H) << std::endl;
+	void render(int x, int y, bool cargo, SDL_Rect* clip = NULL, double angle = 0.0, int cargox = 0, int cargoy = 0, double cargoAngle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE) {
+		SDL_Rect rect = { x, y, droneWidth, droneHeight };
+		SDL_RenderCopyEx(gRenderer, droneTexture, clip, &rect, -angle, center, flip);
 
 
-		if (withCargo) {
-			SDL_Rect renderQuad = { cargox, cargoy, cargoWidth, cargoHeight };
-			SDL_RenderCopyEx(gRenderer, cargoTexture, clip, &renderQuad, -cargoAngle, center, flip);
-			//std::cout << "cargo xy: " << (x + CARGO_CENTER_W) << " " << (y + CARGO_SIDE_TO_DRONE_H) << std::endl;
+		if (cargo) {
+			SDL_Rect rect = { cargox, cargoy, cargoWidth, cargoHeight };
+			SDL_RenderCopyEx(gRenderer, cargoTexture, clip, &rect, -cargoAngle, center, flip);
 
 			SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
 			SDL_RenderDrawLine(gRenderer, (x + DRONE_CENTER_W), (y + DRONE_CENTER_H), (cargox + CARGO_CENTER_W), (cargoy + CARGO_SIDE_TO_DRONE_H));
 		}
 	}
 
-	void updateGraphics(double x, double y, double degrees, double cargox = 0, double cargoy = 0, double cargoDegrees = 0) {
-		// TODO: meters to pixels
-		int pixelX = static_cast<int>(x * METERS_TO_PIXELS);
-		int pixelY = static_cast<int>(-y * METERS_TO_PIXELS);
-		int px = static_cast<int>(cargox * METERS_TO_PIXELS);
-		int py = static_cast<int>(-cargoy * METERS_TO_PIXELS);
+	void updateGraphics(std::vector<double> xk) {
+		double degrees = xk.at(2);
+		int pxDrone = static_cast<int>(xk.at(0) * METERS_TO_PIXELS);
+		int pyDrone = static_cast<int>(-xk.at(1) * METERS_TO_PIXELS);
 
+		double cargoDegrees = 0.0;
+		int pxCargo = 0;
+		int pyCargo = 0;
 
+		bool cargo = false;
+
+		if (xk.size() == 9) {
+			pxCargo = static_cast<int>(xk.at(5) * METERS_TO_PIXELS);
+			pyCargo = static_cast<int>(-xk.at(6) * METERS_TO_PIXELS);
+			cargo = true;
+		}
+		
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
-		render(INIT_DRONE_W + pixelX, INIT_DRONE_H + pixelY, cargo, NULL, degrees, INIT_CARGO_W + px, INIT_CARGO_H + py, cargoDegrees);
+		render(INIT_DRONE_W + pxDrone, INIT_DRONE_H + pyDrone, cargo, NULL, degrees, INIT_CARGO_W + pxCargo, INIT_CARGO_H + pyCargo, cargoDegrees);
 		
 		SDL_RenderPresent(gRenderer);
 	}
@@ -155,14 +132,9 @@ private:
 	int cargoWidth;
 	int cargoHeight;
 
-	int droneX;
-	int droneY;
-
 	bool cargo;
 
 	bool loadFromFileHelper() {
-		free();
-
 		SDL_Texture* newDroneTexture = NULL;
 		SDL_Texture* newCargoTexture = NULL;
 

@@ -8,10 +8,9 @@ class SimStatic :
 {
 public:
 
-	SimStatic(std::vector<double> X0, InputStatic input, double timestep, bool Cargo) : graphics(Cargo), x0(X0)
+	SimStatic(std::vector<double> X0, InputStatic input, double timestep) : x0(X0)
 	{
 		x.push_back(x0);
-		cargo = Cargo;
 		timeStep = timestep;
 		
 		u = input.getInput();
@@ -26,23 +25,11 @@ public:
 		x.push_back(x0);
 		// 2 options, make if else for cargo to update graphics
 		// or pass full xk to graphics and discriminate between cargo or no in the grapgics class
-		if (cargo)
+		for (size_t i = 1; i < t.size(); i++)
 		{
-			for (size_t i = 1; i < t.size(); i++)
-			{
-				x.push_back(eulerForward(x.at(i - 1), u.at(i - 1)));
-				graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2), x.at(i).at(5), x.at(i).at(6));
-				std::cout << t.at(i) << "\n";
-			}
-		}
-		else
-		{
-			for (size_t i = 1; i < t.size(); i++)
-			{
-				x.push_back(eulerForward(x.at(i - 1), u.at(i - 1)));
-				graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2));
-				std::cout << t.at(i) << "\n";
-			}
+			x.push_back(eulerForward(x.at(i - 1), u.at(i - 1)));
+			graphics.updateGraphics(x.at(i));
+			std::cout << t.at(i) << "\n";
 		}
 	};
 
@@ -50,23 +37,11 @@ public:
 	{
 		x.clear();
 		x.push_back(x0);
-		if (cargo)
+		for (size_t i = 1; i < t.size(); i++)
 		{
-			for (size_t i = 1; i < t.size(); i++)
-			{
-				x.push_back(rungeKutta(x.at(i - 1), u.at(i - 1)));
-				graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2), x.at(i).at(5), x.at(i).at(6));
-				std::cout << t.at(i) << "\n";
-			}
-		}
-		else
-		{
-			for (size_t i = 1; i < t.size(); i++)
-			{
-				x.push_back(rungeKutta(x.at(i - 1), u.at(i - 1)));
-				graphics.updateGraphics(x.at(i).at(0), x.at(i).at(1), x.at(i).at(2));
-				std::cout << t.at(i) << "\n";
-			}
+			x.push_back(rungeKutta(x.at(i - 1), u.at(i - 1)));
+			graphics.updateGraphics(x.at(i));
+			std::cout << t.at(i) << "\n";
 		}
 	};
 
@@ -80,6 +55,5 @@ private:
 	std::vector<double> t;
 	std::vector<std::array<double, 2>> u;
 	std::vector<double> x0;
-	bool cargo;
 	Graphics graphics;
 };
