@@ -19,12 +19,15 @@ public:
 
 	SimStatic(std::vector<double> X0, InputStatic input, double timestep) : x0(X0)
 	{
-		std::array<double, 2> y0;
-		y0[0] = sqrt(pow(x0[0] - x0[5], 2) + pow(x0[1] - x0[6], 2));
-		if (y0[0] == 0)	y0[1] = 0;
-		else y0[1] = ((x0[0] - x0[5]) * (x0[3] - x0[7]) + (x0[1] - x0[6]) * (x0[4] - x0[8])) / y0[0];
+		if (x0.size() == 9) {
+			std::array<double, 2> y0;
+			y0[0] = sqrt(pow(x0[0] - x0[5], 2) + pow(x0[1] - x0[6], 2));
+			if (y0[0] == 0)	y0[1] = 0;
+			else y0[1] = ((x0[0] - x0[5]) * (x0[3] - x0[7]) + (x0[1] - x0[6]) * (x0[4] - x0[8])) / y0[0];
 
-		y.push_back(y0);
+			y.push_back(y0);
+		}
+
 		timeStep = timestep;
 
 		u = input.getInput();
@@ -49,7 +52,7 @@ public:
 			x.push_back(eulerForward(x.at(i - 1), u.at(i - 1)));
 			graphics.updateGraphics(x.at(i));
 		}
-	};
+	}
 
 	// simulate full time duraion using Runge Kutta 4
 	void staticSimulateFullRungeKutta()

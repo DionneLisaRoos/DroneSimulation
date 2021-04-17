@@ -87,7 +87,7 @@ int main(int argc, char* args[])
 		if (cargo) {
 			// Here the program will execute using a Drone and Cargo and using file input
 			// Set initial state, set the second element to 1 so the drone is starting a bit higher than the cargo.
-			std::vector<double> initialState = { 0, 1, 0, 0, 0,0,0,0,0 };
+			std::vector<double> initialState = { 0, 1, 0, 0, 0, 0, 0, 0, 0 };
 
 			// Get data from file and create a static simulation 
 			InputStatic input("inputDroneAndCargo.csv", timeStep);

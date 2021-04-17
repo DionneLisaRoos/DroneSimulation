@@ -105,7 +105,9 @@ protected:
 				output << delimiter << *it ;
 			}
 			//write ... y]
-			output << delimiter << y.at(i).at(0) << delimiter << y.at(i).at(1) << '\n';
+			if(x.at(0).size() == 9)	output << delimiter << y.at(i).at(0) << delimiter << y.at(i).at(1);
+
+			output << '\n';
 		}
 		output.close();
 	}
